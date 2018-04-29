@@ -39,18 +39,21 @@ def print_record(**kwargs):
     if len(kwargs['lede']) > 500:
         kwargs['lede'] = kwargs['lede'][:500] + ' ...'
 
+    kwargs['lede'] = kwargs['lede'].encode('utf-8')
+    kwargs['artist'] = kwargs['artist'].encode('utf-8')
+    kwargs['album'] = kwargs['album'].encode('utf-8')
+    kwargs['label'] = kwargs['label'].encode('utf-8')
+    kwargs['symbol'] = kwargs['symbol'].encode('utf-8')
+    kwargs['index'] = kwargs['index'].encode('utf-8')
+
     lede = '\n    '.join(textwrap.wrap(kwargs['lede'], width=70))
     link = colored(kwargs['link'], 'blue')
     album = colored(kwargs['album'].strip(), 'yellow')
     artist = colored(kwargs['artist'].strip(), 'red', attrs=['bold', 'dark'])
 
     print('{}{} :: {} ({}){}'.format(
-        kwargs['index'],
-        artist,
-        album,
-        kwargs['label'],
-        kwargs['symbol']
-    ))
+        kwargs['index'], artist, album,
+        kwargs['label'], kwargs['symbol']))
 
     if 'status' in kwargs:
         status = kwargs['status']
@@ -258,5 +261,5 @@ def resident_advisor():
                 genre = li.text.strip().split('Style /\n\n')[1]
 
         entry = {'artist': artist, 'album': album, 'label': label,
-                'genre': genre, 'link': link, 'lede': lede, 'rating': rating}
+                 'genre': genre, 'link': link, 'lede': lede, 'rating': rating}
         print_record(**entry)

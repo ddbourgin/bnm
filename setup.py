@@ -5,7 +5,7 @@ setup(
     description='View editor selections from music review sites in the terminal',
     url='http://github.com/ddbourgin/bestnewmusic',
     version='0.1',
-    scripts=['bin/am', 'bin/fe', 'bin/p4k', 'bin/ra'],
+    scripts=['bin/am', 'bin/bnm', 'bin/fe', 'bin/p4k', 'bin/ra'],
     author='David Bourgin',
     author_email='ddbourgin@gmail.com',
     license='MIT',
@@ -14,6 +14,7 @@ setup(
         'requests',
         'termcolor',
         'beautifulsoup4',
+        'html5lib',
         'selenium'
     ],
     classifiers=[

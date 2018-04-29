@@ -1,4 +1,0 @@
-#!/usr/bin/env python
-
-import bestnewmusic as bnm
-bnm.allmusic()
