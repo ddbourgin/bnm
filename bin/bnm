@@ -3,19 +3,17 @@
 import argparse
 import bestnewmusic as bnm
 
+choices = ['am', 'p4k', 'ra', 'bk', 'fe']
 parser = argparse.ArgumentParser(
-    description='Retrieve best new music lists and print them to stdout')
-parser.add_argument('source', type=str,
-                    help=('Review source to display. Valid entries are "am"'
-                          '(AllMusic Editor\'s Choice) "p4k" (Pitchfork 8.0+'
-                          'Reviews), "ra" (Resident Advisor Recommended), or'
-                          '"fe" (Forced Exposure Best Sellers)'))
+    description='View recent highly-rated albums in the terminal')
+parser.add_argument('source', type=str, choices=choices, help=("Review source."))
 
 args = parser.parse_args()
 source = args.source.lower()
-if source not in ['am', 'p4k', 'ra', 'fe']:
+if source not in ['am', 'p4k', 'ra', 'fe', 'bk']:
     parser.error("Unrecognized source '{}'. Valid entries are 'fe', 'p4k',"
-                 "'ra', or 'am'.".format(args.source))
+                 "'ra', 'bk', or 'am'.".format(args.source))
+
 elif source == 'am':
     bnm.allmusic()
 elif source == 'p4k':
@@ -24,3 +22,5 @@ elif source == 'ra':
     bnm.resident_advisor()
 elif source == 'fe':
     bnm.forced_exposure()
+elif source == 'bk':
+    bnm.boomkat()

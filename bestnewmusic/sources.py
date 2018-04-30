@@ -263,3 +263,50 @@ def resident_advisor():
         entry = {'artist': artist, 'album': album, 'label': label,
                  'genre': genre, 'link': link, 'lede': lede, 'rating': rating}
         print_record(**entry)
+
+
+def boomkat(period='last-week'):
+    header = """
+        ____                        __         __
+       / __ )____  ____  ____ ___  / /______ _/ /_
+      / __  / __ \/ __ \/ __ `__ \/ //_/ __ `/ __/
+     / /_/ / /_/ / /_/ / / / / / / ,< / /_/ / /_
+    /___________/\____/___/_/ /______|\__,_____/
+       / __ )___  _____/ /_   / ___/___  / / /__  __________
+      / __  / _ \/ ___/ __/   \__ \/ _ \/ / / _ \/ ___/ ___/
+     / /_/ /  __(__  ) /_    ___/ /  __/ / /  __/ /  (__  )
+    /_____/\___/____/\__/   /____/\___/_/_/\___/_/  /____/
+    -------------------------------------------------------
+    """
+    print(header)
+
+    if period not in ['last-week', 'last-month', 'last-year']:
+        raise ValueError('Unrecognized period: {}'.format(period))
+
+    url = 'https://boomkat.com/bestsellers?q[release_date]={}'.format(period)
+    html = requests.get(url).text
+    soup = BeautifulSoup(html, 'html5lib')
+    records = soup.find_all("li", class_="bestsellers-item")
+
+    for ix, record in enumerate(records):
+        titles = record.find(
+            'div', class_='product-name').text.strip().split('\n')
+        genres = record.find(
+            'div', class_='product-label-genre').text.strip().split('\n')
+        link = record.find('a', class_='full-listing').attrs['href']
+
+        label = genres[0].strip()
+        genre = genres[-1].strip()
+        artist = titles[0].strip()
+        album = titles[-1].strip()
+
+        # visit the review page to get the review lede
+        review_html = requests.get(link).text
+        review = BeautifulSoup(review_html, 'html5lib')
+        lede = review.find('div', class_='product-review').find('strong').text
+
+        entry = {'artist': artist, 'album': album, 'label': label,
+                 'genre': genre, 'link': link, 'lede': lede,
+                 'index': '{}. '.format(ix + 1)}
+
+        print_record(**entry)
