@@ -244,9 +244,9 @@ def resident_advisor():
         label = record.find('div', class_='sub').find('h1').text
 
         try:
-            artist, album = title.split(' - ', maxsplit=1)
+            artist, album = title.split(' - ', 1)
         except ValueError:
-            artist, album = title.split('- ', maxsplit=1)
+            artist, album = title.split('- ', 1)
 
         # visit the review page to get genre, rating, & review lede
         review_html = requests.get(link).text
