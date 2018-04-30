@@ -1,10 +1,15 @@
 language: python
 sudo: false
+dist: trusty
 python:
   - 2.7
   - 3.5
   - 3.6
   - 3.7-dev
+before_script:
+  - wget https://chromedriver.storage.googleapis.com/2.38/chromedriver_linux64.zip
+  - unzip chromedriver_linux64.zip -d /home/travis/virtualenv/python$TRAVIS_PYTHON_VERSION/bin/
+  - export CHROME_BIN=chromium-browser
 install:
   - pip install tox-travis
 script:
