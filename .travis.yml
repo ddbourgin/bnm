@@ -12,7 +12,6 @@ addons:
       - google-chrome-stable
 before_script:
   - wget https://chromedriver.storage.googleapis.com/2.38/chromedriver_linux64.zip
-  # - unzip chromedriver_linux64.zip -d /home/travis/virtualenv/python$TRAVIS_PYTHON_VERSION/bin/
   - unzip chromedriver_linux64.zip -d ~/
   - sudo mv -f ~/chromedriver /usr/local/share/
   - sudo chmod +x /usr/local/share/chromedriver
