@@ -1,4 +1,6 @@
 # bestnewmusic
+Linux: [![TravisCI](https://travis-ci.org/jupyter/nbgrader.svg?branch=master)](https://travis-ci.org/jupyter/nbgrader)
+
 View recent highly rated albums in the terminal. 
 
 ![bnm](images/bnm.gif "bnm p4k")
