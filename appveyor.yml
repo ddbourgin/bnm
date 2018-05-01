@@ -48,7 +48,7 @@ install:
 
   # Install tox testing suite
   - "%CMD_IN_ENV% python -m pip install --upgrade --pre tox"
-  - "%CMD_IN_ENV% python pip -m install --upgrade wheel"
+  - "%CMD_IN_ENV% python -m pip install --upgrade wheel"
 
   # Install and early check enable extensions before the actual tests
   - "%CMD_IN_ENV% python setup.py install"
