@@ -5,11 +5,15 @@ setup(
     description='View editor selections from music review sites in the terminal',
     url='http://github.com/ddbourgin/bestnewmusic',
     version='0.1',
-    scripts=['bin/bnm'],
     author='David Bourgin',
     author_email='ddbourgin@gmail.com',
     license='MIT',
     packages=['bestnewmusic'],
+    entry_points = {
+        "console_scripts": [
+            "bnm = bestnewmusic.__main__:main",
+        ]
+    },
     install_requires=[
         'requests',
         'termcolor',
