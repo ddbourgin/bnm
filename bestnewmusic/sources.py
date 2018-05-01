@@ -39,21 +39,19 @@ def print_record(**kwargs):
     if len(kwargs['lede']) > 500:
         kwargs['lede'] = kwargs['lede'][:500] + ' ...'
 
-    kwargs['lede'] = kwargs['lede'].encode('utf-8')
-    kwargs['artist'] = kwargs['artist'].encode('utf-8')
-    kwargs['album'] = kwargs['album'].encode('utf-8')
-    kwargs['label'] = kwargs['label'].encode('utf-8')
-    kwargs['symbol'] = kwargs['symbol'].encode('utf-8')
-    kwargs['index'] = kwargs['index'].encode('utf-8')
+    artist = kwargs['artist'].encode('utf-8')
+    album = kwargs['album'].encode('utf-8')
+    label = kwargs['label'].encode('utf-8')
+    symbol = kwargs['symbol'].encode('utf-8')
+    index = kwargs['index'].encode('utf-8')
+    link = kwargs['link'].encode('utf-8')
 
-    lede = '\n    '.join(textwrap.wrap(kwargs['lede'], width=70))
-    link = colored(kwargs['link'], 'blue')
-    album = colored(kwargs['album'].strip(), 'yellow')
-    artist = colored(kwargs['artist'].strip(), 'red', attrs=['bold', 'dark'])
+    link = colored(link.strip(), 'blue')
+    album = colored(album.strip(), 'yellow')
+    artist = colored(artist.strip(), 'red', attrs=['bold', 'dark'])
+    lede = '\n    '.join(textwrap.wrap(kwargs['lede'], width=70)).encode('utf-8')
 
-    print('{}{} :: {} ({}){}'.format(
-        kwargs['index'], artist, album,
-        kwargs['label'], kwargs['symbol']))
+    print('{}{} :: {} ({}){}'.format(index, artist, album, label, symbol))
 
     if 'status' in kwargs:
         status = kwargs['status']
@@ -64,12 +62,14 @@ def print_record(**kwargs):
         print('    {}'.format(status))
 
     if 'genre' in kwargs:
-        genre = colored(kwargs['genre'], 'blue', attrs=['bold', 'dark'])
+        genre = kwargs['genre'].encode('utf-8')
+        genre = colored(genre, 'blue', attrs=['bold', 'dark'])
         print('    {}'.format(genre))
 
     if 'rating' in kwargs:
+        rating = kwargs['rating'].encode('utf-8')
         ul_rating = colored('Rating', attrs=['underline'])
-        print('    {}: {}'.format(ul_rating, kwargs['rating']))
+        print('    {}: {}'.format(ul_rating, rating))
 
     print('    "{}"'.format(lede))
     print('    {}\n'.format(link))
