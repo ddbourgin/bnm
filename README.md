@@ -1,5 +1,6 @@
 # bestnewmusic
-Linux: [![TravisCI](https://travis-ci.org/jupyter/nbgrader.svg?branch=master)](https://travis-ci.org/jupyter/nbgrader)
+Linux: [![TravisCI](https://travis-ci.org/ddbourgin/bestnewmusic.svg)](https://travis-ci.org/ddbourgin/bestnewmusic)
+Windows: [![AppVeyor](https://ci.appveyor.com/api/projects/status/github/ddbourgin/bestnewmusic?svg=True)](https://ci.appveyor.com/project/ddbourgin/bestnewmusic)
 
 View recent highly rated albums in the terminal. 
 
@@ -13,28 +14,28 @@ Lists are compiled from:
 - [Boomkat Best Sellers](https://boomkat.com/bestsellers)
 
 ## Insallation
-Install the `bnm` CLI with pip:
+Install with pip:
 ```
 pip install bestnewmusic
 ```
 ## Usage
 ### AllMusic Editor's Choice
 ```bash
-> bnm am
+bnm am
 ```
 ### Resident Advisor Recommends
 ```bash
-> bnm ra
+bnm ra
 ```
 ### Forced Exposure Best Sellers
 ```bash
-> bnm fe
+bnm fe
 ```
 ### Pitchfork 8.0+ Reviews
 ```bash
-> bnm p4k
+bnm p4k
 ```
 ### Boomkat Best Sellers
 ```bash
-> bnm bk
+bnm bk
 ```
