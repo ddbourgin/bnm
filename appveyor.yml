@@ -4,6 +4,7 @@ environment:
     # /E:ON and /V:ON options are not enabled in the batch script intepreter
     # See: http://stackoverflow.com/a/13751649/163740
     CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\appveyor\\run_with_env.cmd"
+    TOX_ENV: "pywin"
 
   matrix:
     - PYTHON: "C:\\Python27-x64"
@@ -27,6 +28,9 @@ install:
   - ECHO "Filesystem root:"
   - ps: "ls \"C:/\""
 
+  - ps: "wget https://github.com/cloudify-cosmo/appveyor-utils/archive/master.zip -OutFile ./master.zip"
+  - "7z e master.zip */appveyor/* -oappveyor"
+
   # Install Python (from the official .msi of http://python.org) and pip when
   # not already installed.
   - ps: if (-not(Test-Path($env:PYTHON))) { & appveyor\install.ps1 }
@@ -34,27 +38,28 @@ install:
   # Prepend newly installed Python to the PATH of this build (this cannot be
   # done from inside the powershell script as it would require to restart
   # the parent CMD process).
-  - cmd: set "PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
-  - cmd: python --version
-  - cmd: python -c "import struct; print(struct.calcsize('P') * 8)"
+  - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
+  - "python --version"
+  - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
 
   # Upgrade to the latest version of pip to avoid it displaying warnings
   # about it being out of date.
-  - cmd: python -m pip install --upgrade pip
+  - "python -m pip install --upgrade pip"
 
   # Install tox testing suite
-  - cmd: python -m pip install --upgrade --pre tox
-
-  - cmd: pip install -U wheel
+  - "%CMD_IN_ENV% python -m pip install --upgrade --pre tox"
+  - "%CMD_IN_ENV% python pip -m install --upgrade wheel"
 
   # Install and early check enable extensions before the actual tests
-  - cmd: python setup.py install
+  - "%CMD_IN_ENV% python setup.py install"
 
 # Skip .NET project specific build phase.
 build: off
 
 test_script:
-  - '%WITH_COMPILER% %PYTHON_HOME%\Scripts\tox'
+  - "%CMD_IN_ENV% tox -e %TOX_ENV%"
+  # - "%CMD_IN_ENV% misc\windows-build.cmd %PYTHON%\Scripts\tox.exe -e py"
+  # - '%WITH_COMPILER% %PYTHON_HOME%\Scripts\tox'
 
 artifacts:
   - path: dist\*
