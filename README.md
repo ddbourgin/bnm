@@ -1,5 +1,5 @@
 # bestnewmusic
-Linux: [![TravisCI](https://travis-ci.org/ddbourgin/bestnewmusic)](https://travis-ci.org/ddbourgin/bestnewmusic)
+Linux: [![TravisCI](https://travis-ci.org/ddbourgin/bestnewmusic.svg)](https://travis-ci.org/ddbourgin/bestnewmusic)
 Windows: [![AppVeyor](https://ci.appveyor.com/api/projects/status/github/ddbourgin/bestnewmusic?svg=True)](https://ci.appveyor.com/project/ddbourgin/bestnewmusic)
 
 View recent highly rated albums in the terminal. 
