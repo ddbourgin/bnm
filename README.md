@@ -26,15 +26,15 @@ pip install bestnewmusic
 ```
 
 ### Ubuntu
-Install the [google-chrome-stable](https://www.ubuntuupdates.org/ppa/google_chrome?dist=stable) package from 3rd party repo:
-```
+Install the [google-chrome-stable](https://www.ubuntuupdates.org/ppa/google_chrome?dist=stable) package from the Google Linux repo:
+```bash
 wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add - 
 sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
 sudo apt-get update 
-sudo apt-get install unzip google-chrome-stable xvfb libxi6 libgconf-2-4
+sudo apt-get install unzip google-chrome-stable xvfb
 ```
 
-Install chromedriver and the bestnewmusic package with pip:
+Install the bestnewmusic package with pip:
 ```
 pip install bestnewmusic
 ```
