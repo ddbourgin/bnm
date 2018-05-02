@@ -15,6 +15,7 @@ setup(
         ]
     },
     install_requires=[
+        'chromedriver_installer',
         'requests',
         'termcolor',
         'beautifulsoup4',
