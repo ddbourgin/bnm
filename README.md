@@ -13,7 +13,7 @@ Lists are compiled from:
 - [Forced Exposure Best Sellers](https://forcedexposure.com/Best/BestIndex.html)
 - [Boomkat Best Sellers](https://boomkat.com/bestsellers)
 
-## Insallation
+## Installation
 ### OSX
 Some commands use chromedriver with Selenium to render webpages. On OSX, the easiest way to install these (if you don't have them already) is to use homebrew:
 ```
@@ -26,7 +26,7 @@ pip install bestnewmusic
 ```
 
 ### Ubuntu
-Install the [google-chrome-stable](https://www.ubuntuupdates.org/ppa/google_chrome?dist=stable) package from the Google Linux repo:
+Install the [google-chrome-stable](https://www.ubuntuupdates.org/ppa/google_chrome?dist=stable) package from the Google Linux repo along with `xvfb` so we can run it headlessly:
 ```bash
 wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add - 
 sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
