@@ -7,25 +7,7 @@ import requests
 from termcolor import colored
 from bs4 import BeautifulSoup
 
-from selenium import webdriver
-from selenium.common.exceptions import TimeoutException
-
-
-def render(query_url, page_load_timeout=30):
-    options = webdriver.ChromeOptions()
-    options.add_argument('headless')
-    browser = webdriver.Chrome(chrome_options=options)
-    browser.set_page_load_timeout(page_load_timeout)
-
-    try:
-        browser.get(query_url)
-        html_source = browser.page_source
-        browser.quit()
-        return html_source
-
-    except TimeoutException:
-        print("\t\tRetrying page load after {}s timeout".format(PAGE_LOAD_TIMEOUT))
-        return render(query_url)
+from .util import try_except, render
 
 
 def print_record(**kwargs):
@@ -76,14 +58,6 @@ def print_record(**kwargs):
     print('    {}\n'.format(link))
 
 
-def try_except(f, field):
-    try:
-        out = f()
-    except (AttributeError, TypeError, IndexError) as e:
-        out = 'Unknown {}'.format(field)
-    return out
-
-
 def allmusic():
     header = """
                _ _ __  __           _
@@ -107,17 +81,17 @@ def allmusic():
     records = soup.find_all('div', class_='editors-choice')
 
     for record in records:
-        artist = try_except(lambda : record.find(
+        artist = try_except(lambda: record.find(
             'div', class_='artist').text.strip(), 'artist')
-        album = try_except(lambda : record.find(
+        album = try_except(lambda: record.find(
             'div', class_='title').text.strip(), 'album')
-        genre = try_except(lambda : record.find(
+        genre = try_except(lambda: record.find(
             'div', class_='styles').text.strip(), 'genre')
-        lede = try_except(lambda : record.find(
+        lede = try_except(lambda: record.find(
             'div', class_='headline-review').text.strip(), 'review')
-        label = try_except(lambda : record.find(
+        label = try_except(lambda: record.find(
             'div', class_='label').text.strip(), 'label')
-        link = try_except(lambda : record.find(
+        link = try_except(lambda: record.find(
             'div', class_='title').find('a').attrs['href'].strip(), 'link')
 
         entry = {
@@ -148,17 +122,17 @@ def forced_exposure():
         ix = '0' + str(ix) if ix <= 9 else ix
         prefix = 'ctl00_ContentPlaceHolder1_gvRecBestSeller_ctl{}_'.format(ix)
 
-        artist = try_except(lambda : soup.find(
+        artist = try_except(lambda: soup.find(
             "a", {'id': prefix + 'hlnkArtistId'}).text.strip().title(), 'artist')
-        album = try_except(lambda : soup.find(
+        album = try_except(lambda: soup.find(
             'a', {'id': prefix + 'hrTitle'}).text.strip(), 'album')
-        label = try_except(lambda : soup.find(
+        label = try_except(lambda: soup.find(
             'a', {'id': prefix + 'hlnkLabel'}).text.title(), 'label')
-        lede = try_except(lambda : soup.find(
+        lede = try_except(lambda: soup.find(
             'span', {'id': prefix + 'lblTx_Desc'}).text.strip(), 'review')
-        status = try_except(lambda : soup.find(
+        status = try_except(lambda: soup.find(
             'span', {'id': prefix + 'lblStockStatus'}).text.strip(), 'status')
-        link = try_except(lambda : soup.find(
+        link = try_except(lambda: soup.find(
             'a', {'id': prefix + 'hrTitle'}).attrs['href'].strip(), 'link')
 
         if 'Unknown link' not in link:
@@ -222,23 +196,23 @@ def pitchfork(n_pages=2):
             if isinstance(genre, list):
                 genre = ' / '.join(genre)
 
-            label = 'Unknown label'
-            lede = 'Unknown review'
-            rating = 'Unknown rating'
+            label, lede, rating = (
+                'Unknown label', 'Unknown review', 'Unknown rating')
+
             if 'Unknown link' not in link:
                 link = 'https://pitchfork.com{}'.format(link)
 
                 # visit the review page to get genre, rating, & review lede
                 review_html = requests.get(link).text
                 review = BeautifulSoup(review_html, 'html5lib')
-                rating = try_except(lambda : review.find(
+                rating = try_except(lambda: review.find(
                     'span', class_='score').text.strip(), 'rating')
 
                 labels = review.find_all('li', class_='labels-list__item')
 
                 label = try_except(
                     lambda: [g.text for g in labels], 'label')
-                lede = try_except(lambda : review.find(
+                lede = try_except(lambda: review.find(
                     'div', class_='review-detail__abstract').text.strip(), 'review')
 
             symbol = ''
@@ -249,6 +223,7 @@ def pitchfork(n_pages=2):
 
             entry = {'artist': artist, 'album': album, 'label': label, 'genre': genre,
                      'link': link, 'lede': lede, 'rating': rating, 'symbol': symbol}
+
             print_record(**entry)
 
     print('{} = Best New Album'.format(colored('*', 'red', attrs=['bold'])))
@@ -272,7 +247,7 @@ def resident_advisor():
     records = soup.find_all("li", class_="min-height-medium")
 
     for record in records:
-        title = try_except(lambda : record.find('h1').text.strip(), 'album')
+        title = try_except(lambda: record.find('h1').text.strip(), 'album')
         artist, album = ('Unknown artist', 'Unknown album')
 
         if 'Unknown album' not in title:
@@ -281,9 +256,9 @@ def resident_advisor():
             except ValueError:
                 artist, album = title.split('- ', 1)
 
-        href = try_except(lambda : record.find(
+        href = try_except(lambda: record.find(
             'a').attrs['href'].strip(), 'link')
-        label = try_except(lambda : record.find(
+        label = try_except(lambda: record.find(
             'div', class_='sub').find('h1').text.strip(), 'label')
 
         rating, lede = ('Unknown rating', 'Unknown review')
@@ -296,7 +271,7 @@ def resident_advisor():
 
             rating = try_except(lambda: '{}'.format(
                 review.find('span', class_='rating').text), 'rating')
-            lede = try_except(lambda : review.find(
+            lede = try_except(lambda: review.find(
                 'span', class_='reading-line-height').text.strip().split('\n')[0].strip(),
                 'review')
 
@@ -334,24 +309,24 @@ def boomkat(period='last-week'):
     records = soup.find_all("li", class_="bestsellers-item")
 
     for ix, record in enumerate(records):
-        titles = try_except(lambda : record.find(
+        titles = try_except(lambda: record.find(
             'div', class_='product-name').text.strip(), 'album')
-        genres = try_except(lambda : record.find(
+        genres = try_except(lambda: record.find(
             'div', class_='product-label-genre').text.strip(), 'genre')
-        link = try_except(lambda : record.find(
+        link = try_except(lambda: record.find(
             'a', class_='full-listing').attrs['href'].strip(), 'link')
 
-        label = try_except(lambda : genres.split('\n')[0].strip(), 'label')
-        genre = try_except(lambda : genres.split('\n')[-1].strip(), 'genre')
-        artist = try_except(lambda : titles.split('\n')[0].strip(), 'artist')
-        album = try_except(lambda : titles.split('\n')[-1].strip(), 'album')
+        label = try_except(lambda: genres.split('\n')[0].strip(), 'label')
+        genre = try_except(lambda: genres.split('\n')[-1].strip(), 'genre')
+        artist = try_except(lambda: titles.split('\n')[0].strip(), 'artist')
+        album = try_except(lambda: titles.split('\n')[-1].strip(), 'album')
 
         # visit the review page to get the review lede
         lede = 'Unknown review'
         if 'Unknown link' not in link:
             review_html = requests.get(link).text
             review = BeautifulSoup(review_html, 'html5lib')
-            lede = try_except(lambda : review.find(
+            lede = try_except(lambda: review.find(
                 'div', class_='product-review').find('strong').text.strip(), 'review')
 
         entry = {'artist': artist, 'album': album, 'label': label,
