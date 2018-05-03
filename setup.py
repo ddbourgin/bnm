@@ -1,13 +1,24 @@
 from setuptools import setup
+from codecs import open
+from os import path
+
+here = path.abspath(path.dirname(__file__))
+
+# Get the long description from the README file
+with open(path.join(here, 'README.md'), encoding='utf-8') as f:
+    long_description = f.read()
 
 setup(
     name='bestnewmusic',
     description='View editor selections from music review sites in the terminal',
-    url='http://github.com/ddbourgin/bestnewmusic',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
+    url='https://github.com/ddbourgin/bestnewmusic',
     version='0.1',
     author='David Bourgin',
     author_email='ddbourgin@gmail.com',
     license='MIT',
+    keywords=['music', 'terminal'],
     packages=['bestnewmusic'],
     entry_points = {
         "console_scripts": [
@@ -26,13 +37,13 @@ setup(
         'Development Status :: 3 - Alpha',
         'License :: OSI Approved :: MIT License',
         'Environment :: Console',
-        'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
     ],
-    zip_safe=False,
-    include_package_data=True,
+    project_urls={
+        'Source': 'https://github.com/ddbourgin/bestnewmusic',
+    }
 )
