@@ -191,8 +191,6 @@ def pitchfork(n_pages=2):
                 artist = ' / '.join(artist)
             if isinstance(album, list):
                 album = ' / '.join(album)
-            if isinstance(label, list):
-                label = ', '.join(label)
             if isinstance(genre, list):
                 genre = ' / '.join(genre)
 
@@ -214,6 +212,9 @@ def pitchfork(n_pages=2):
                     lambda: [g.text for g in labels], 'label')
                 lede = try_except(lambda: review.find(
                     'div', class_='review-detail__abstract').text.strip(), 'review')
+
+            if isinstance(label, list):
+                label = ', '.join(label)
 
             symbol = ''
             if 'Best New Reissue' in bnm:
