@@ -175,7 +175,7 @@ def pitchfork(n_pages=2):
             bnms = record.find_all('a', class_='review__meta-bnm')
             artists = record.find_all(
                 'ul', class_='artist-list review__title-artist')
-            link = try_except(record.find(
+            link = try_except(lambda : record.find(
                 'a', class_='review__link').attrs['href'].strip(), 'link')
 
             artist = try_except(
@@ -277,9 +277,11 @@ def resident_advisor():
                 'review')
 
         genre = 'Unknown genre'
-        for li in review.find('ul', class_='clearfix').find_all('li'):
-            if 'Style' in li.text:
-                genre = li.text.strip().split('Style /\n\n')[1]
+        lines = try_except(lambda: review.find('ul', class_='clearfix').find_all('li'), 'lines')
+        if not 'Unknown lines' in lines:
+            for li in lines:
+                if 'Style' in li.text:
+                    genre = li.text.strip().split('Style /\n\n')[1]
 
         entry = {'artist': artist, 'album': album, 'label': label,
                  'genre': genre, 'link': link, 'lede': lede, 'rating': rating}

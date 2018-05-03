@@ -14,7 +14,7 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/ddbourgin/bestnewmusic',
-    version='0.1',
+    version='0.2',
     author='David Bourgin',
     author_email='ddbourgin@gmail.com',
     license='MIT',
