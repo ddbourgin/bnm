@@ -58,7 +58,7 @@ def print_record(**kwargs):
     print('    {}\n'.format(link))
 
 
-def allmusic():
+def allmusic(oldest_first=False):
     header = """
                _ _ __  __           _
          /\   | | |  \/  |         (_)
@@ -79,6 +79,9 @@ def allmusic():
     html = render(url)
     soup = BeautifulSoup(html, 'html5lib')
     records = soup.find_all('div', class_='editors-choice')
+
+    if oldest_first:
+        records = records[::-1]
 
     for record in records:
         artist = try_except(lambda: record.find(
@@ -101,7 +104,7 @@ def allmusic():
         print_record(**entry)
 
 
-def forced_exposure():
+def forced_exposure(oldest_first=False):
     header = """
      ___  __   __   __   ___  __      ___      __   __   __        __   ___
     |__  /  \ |__) /  ` |__  |  \    |__  \_/ |__) /  \ /__` |  | |__) |__
@@ -118,7 +121,11 @@ def forced_exposure():
     html = requests.get(url).text
     soup = BeautifulSoup(html, 'html5lib')
 
-    for ix in range(2, 52):
+    indices = range(2, 52)
+    if oldest_first:
+        indices = reversed(indices)
+
+    for ix in indices:
         ix = '0' + str(ix) if ix <= 9 else ix
         prefix = 'ctl00_ContentPlaceHolder1_gvRecBestSeller_ctl{}_'.format(ix)
 
@@ -146,7 +153,7 @@ def forced_exposure():
         print_record(**entry)
 
 
-def pitchfork(n_pages=2):
+def pitchfork(n_pages=2, oldest_first=False):
     header = """
            ___ _ _       _      __            _
           / _ (_) |_ ___| |__  / _| ___  _ __| | __
@@ -162,14 +169,21 @@ def pitchfork(n_pages=2):
     """
     print(header)
 
-    for pn in range(1, n_pages + 1):
+    pages = range(1, n_pages + 1)
+    if oldest_first:
+        pages = reversed(pages)
+
+    for pn in pages:
         url = ("https://pitchfork.com/best/high-scoring-albums/?page={}"
                .format(pn))
         html = requests.get(url).text
         soup = BeautifulSoup(html, 'html5lib')
         records = soup.find_all("div", class_="review")
 
-        for idx, record in enumerate(records):
+        if oldest_first:
+            records = records[::-1]
+
+        for record in records:
             albums = record.find_all('h2', class_='review__title-album')
             genres = record.find_all('a', class_='genre-list__link')
             bnms = record.find_all('a', class_='review__meta-bnm')
@@ -231,7 +245,7 @@ def pitchfork(n_pages=2):
     print('{} = Best New Reissue'.format(colored('**', 'red', attrs=['bold'])))
 
 
-def resident_advisor():
+def resident_advisor(oldest_first=False):
     header = """
        __    _       __                                                   _
       /__\  /_\     /__\ ___  ___ ___  _ __ ___  _ __ ___   ___ _ __   __| |___
@@ -246,6 +260,9 @@ def resident_advisor():
     html = requests.get(url).text
     soup = BeautifulSoup(html, 'html5lib')
     records = soup.find_all("li", class_="min-height-medium")
+
+    if oldest_first:
+        records = records[::-1]
 
     for record in records:
         title = try_except(lambda: record.find('h1').text.strip(), 'album')
@@ -288,7 +305,7 @@ def resident_advisor():
         print_record(**entry)
 
 
-def boomkat(period='last-week'):
+def boomkat(period='last-week', oldest_first=False):
     header = """
         ____                        __         __
        / __ )____  ____  ____ ___  / /______ _/ /_
@@ -311,6 +328,9 @@ def boomkat(period='last-week'):
     soup = BeautifulSoup(html, 'html5lib')
     records = soup.find_all("li", class_="bestsellers-item")
 
+    if oldest_first:
+        records = records[::-1]
+
     for ix, record in enumerate(records):
         titles = try_except(lambda: record.find(
             'div', class_='product-name').text.strip(), 'album')
@@ -331,6 +351,9 @@ def boomkat(period='last-week'):
             review = BeautifulSoup(review_html, 'html5lib')
             lede = try_except(lambda: review.find(
                 'div', class_='product-review').find('strong').text.strip(), 'review')
+
+        if oldest_first:
+            ix = len(records) - ix - 1
 
         entry = {'artist': artist, 'album': album, 'label': label,
                  'genre': genre, 'link': link, 'lede': lede,
