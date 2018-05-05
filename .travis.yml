@@ -6,17 +6,21 @@ python:
   - 3.5
   - 3.6
   - 3.7-dev
-addons:
-  apt:
-    packages:
-      - google-chrome-stable
+# addons:
+#   apt:
+#     packages:
+#       - google-chrome-stable
 before_script:
-  - wget https://chromedriver.storage.googleapis.com/2.38/chromedriver_linux64.zip
-  - unzip chromedriver_linux64.zip -d ~/
-  - sudo mv -f ~/chromedriver /usr/local/share/
-  - sudo chmod +x /usr/local/share/chromedriver
-  - sudo ln -s /usr/local/share/chromedriver /usr/local/bin/chromedriver
-  - export CHROME_BIN=chromium-browser
+    - wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add - 
+    - sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
+    - sudo apt-get update 
+    - sudo apt-get install unzip google-chrome-stable xvfb
+  # - wget https://chromedriver.storage.googleapis.com/2.38/chromedriver_linux64.zip
+  # - unzip chromedriver_linux64.zip -d ~/
+  # - sudo mv -f ~/chromedriver /usr/local/share/
+  # - sudo chmod +x /usr/local/share/chromedriver
+  # - sudo ln -s /usr/local/share/chromedriver /usr/local/bin/chromedriver
+  # - export CHROME_BIN=chromium-browser
 install:
   - pip install tox-travis
 script:
