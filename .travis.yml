@@ -1,26 +1,26 @@
 language: python
-sudo: false
-dist: trusty
-python:
-  - 2.7
-  - 3.5
-  - 3.6
-  - 3.7-dev
-# addons:
-#   apt:
-#     packages:
-#       - google-chrome-stable
+matrix:
+    include:
+        - os: linux
+          dist: trusty
+          sudo: false
+          python: 2.7
+        - os: linux
+          dist: trusty
+          sudo: false
+          python: 3.5
+        - os: linux
+          dist: trusty
+          sudo: false
+          python: 3.7-dev
+        - os: osx
+          language: objective-c
+          env: PYENV_VERSION=2.7.12
+        - os: osx
+          language: objective-c
+          env: PYENV_VERSION=3.5.2
 before_script:
-    - wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add - 
-    - sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
-    - sudo apt-get update 
-    - sudo apt-get install unzip google-chrome-stable xvfb
-  # - wget https://chromedriver.storage.googleapis.com/2.38/chromedriver_linux64.zip
-  # - unzip chromedriver_linux64.zip -d ~/
-  # - sudo mv -f ~/chromedriver /usr/local/share/
-  # - sudo chmod +x /usr/local/share/chromedriver
-  # - sudo ln -s /usr/local/share/chromedriver /usr/local/bin/chromedriver
-  # - export CHROME_BIN=chromium-browser
+    - ./.travis/install.sh
 install:
   - pip install tox-travis
 script:
