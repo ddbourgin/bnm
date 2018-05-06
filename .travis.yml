@@ -3,15 +3,15 @@ matrix:
     include:
         - os: linux
           dist: trusty
-          sudo: false
+          sudo: true
           python: 2.7
         - os: linux
           dist: trusty
-          sudo: false
+          sudo: true
           python: 3.5
         - os: linux
           dist: trusty
-          sudo: false
+          sudo: true
           python: 3.7-dev
         - os: osx
           language: objective-c
