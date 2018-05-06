@@ -20,7 +20,7 @@ matrix:
           language: objective-c
           env: PYENV_VERSION=3.5.2
 before_script:
-    - ./.travis/install.sh
+    - "./.travis/install.sh"
 install:
   - pip install tox-travis
 script:
