@@ -22,7 +22,6 @@ matrix:
 before_install:
     - ./.travis/install.sh
 install:
-  - python -m pip install -U pip
   - pip install tox-travis
 script:
   - tox
