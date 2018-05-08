@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+echo '[Running install.sh]'
 if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
     brew update
     brew cask install google-chrome
@@ -10,9 +11,10 @@ if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
     export PATH="/Users/travis/.pyenv/shims:${PATH}"
     pyenv-virtualenv venv
     source venv/bin/activate
+    wget -qO- https://bootstrap.pypa.io/get-pip.py | python
 
     # A manual check that the correct version of Python is running.
-    python --version
+    echo $(python --version)
 else
     wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add - 
     sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
