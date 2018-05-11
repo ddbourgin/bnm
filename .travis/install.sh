@@ -15,9 +15,11 @@ if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
 
     # A manual check that the correct version of Python is running.
     echo $(python --version)
+  - pip install tox-travis
 else
     wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add - 
     sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
     sudo apt-get update
     sudo apt-get install unzip google-chrome-stable xvfb
+    pip install tox-travis
 fi
