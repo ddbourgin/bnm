@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
 import argparse
-from .sources import allmusic, pitchfork, resident_advisor, forced_exposure, boomkat
+from .sources import (allmusic, pitchfork, resident_advisor, forced_exposure,
+                      boomkat, metacritic, midheaven)
 
-choices = ['am', 'p4k', 'ra', 'bk', 'fe']
+choices = ['am', 'p4k', 'ra', 'bk', 'fe', 'mc', 'mh']
 
 
 def main():
@@ -19,6 +20,8 @@ def main():
 - p4k : Pitchfork 8.0+ Albums
 - ra  : Resident Advisor Recommends
 - bk  : Boomkat Weekly Best Sellers
+- mh  : Midheaven Weekly Best Sellers
+- mc  : Metacritic Best Metascore (Past 90 Days)
 - fe  : Forced Exposure Weekly Best Sellers''')
     parser.add_argument('-r', '--reverse', action='store_true',
                         help='Display items in reverse order (with most recent last)')
@@ -42,6 +45,10 @@ def main():
         forced_exposure(oldest_first=reverse)
     elif source == 'bk':
         boomkat(oldest_first=reverse)
+    elif source == 'mc':
+        metacritic(oldest_first=reverse)
+    elif source == 'mh':
+        midheaven(oldest_first=reverse)
 
 
 if __name__ == "__main__":

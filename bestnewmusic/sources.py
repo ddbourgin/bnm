@@ -75,6 +75,8 @@ def allmusic(oldest_first=False):
     """
     print(header)
 
+    star_map = {'10': '5', '9': '5', '8': '4.5', '7': '4', '6': '3.5',
+                '5': '3', '4': '2.5', '3': '2', '2': '1.5', '1': '1'}
     url = "https://www.allmusic.com/newreleases/editorschoice"
     html = render(url)
     soup = BeautifulSoup(html, 'html5lib')
@@ -96,10 +98,15 @@ def allmusic(oldest_first=False):
             'div', class_='label').text.strip(), 'label')
         link = try_except(lambda: record.find(
             'div', class_='title').find('a').attrs['href'].strip(), 'link')
+        rating = try_except(lambda: record.find(
+            'span', class_='allmusic-rating').attrs['class'][-1], 'rating')
+
+        if 'Unknown rating' not in rating:
+            rating = star_map[rating.split('rating-allmusic-')[-1]]
 
         entry = {
             'artist': artist, 'album': album, 'label': label, 'link': link,
-            'genre': genre, 'lede': lede}
+            'genre': genre, 'lede': lede, 'rating': rating}
 
         print_record(**entry)
 
@@ -189,7 +196,7 @@ def pitchfork(n_pages=2, oldest_first=False):
             bnms = record.find_all('a', class_='review__meta-bnm')
             artists = record.find_all(
                 'ul', class_='artist-list review__title-artist')
-            link = try_except(lambda : record.find(
+            link = try_except(lambda: record.find(
                 'a', class_='review__link').attrs['href'].strip(), 'link')
 
             artist = try_except(
@@ -294,7 +301,8 @@ def resident_advisor(oldest_first=False):
                 'review')
 
         genre = 'Unknown genre'
-        lines = try_except(lambda: review.find('ul', class_='clearfix').find_all('li'), 'lines')
+        lines = try_except(lambda: review.find(
+            'ul', class_='clearfix').find_all('li'), 'lines')
         if not 'Unknown lines' in lines:
             for li in lines:
                 if 'Style' in li.text:
@@ -357,6 +365,134 @@ def boomkat(period='last-week', oldest_first=False):
 
         entry = {'artist': artist, 'album': album, 'label': label,
                  'genre': genre, 'link': link, 'lede': lede,
+                 'index': '{}. '.format(ix + 1)}
+
+        print_record(**entry)
+
+
+def midheaven(oldest_first=False):
+    header = """
+                    d8,      d8b  d8b
+                   `8P       88P  ?88
+                            d88    88b
+      88bd8b,d88b   88b d888888    888888b  d8888b d888b8b  ?88   d8P d8888b  88bd88b
+      88P'`?8P'?8b  88Pd8P' ?88    88P `?8bd8b_,dPd8P' ?88  d88  d8P'd8b_,dP  88P' ?8b
+     d88  d88  88P d88 88b  ,88b  d88   88P88b    88b  ,88b ?8b ,88' 88b     d88   88P
+    d88' d88'  88bd88' `?88P'`88bd88'   88b`?888P'`?88P'`88b`?888P'  `?888P'd88'   88b
+     d8b                                                 d8b  d8b
+     ?88                        d8P                      88P  88P
+      88b                    d888888P                   d88  d88
+      888888b  d8888b .d888b,  ?88'       .d888b, d8888b888  888   d8888b  88bd88b .d888b,
+      88P `?8bd8b_,dP ?8b,     88P        ?8b,   d8b_,dP?88  ?88  d8b_,dP  88P'  ` ?8b,
+     d88,  d8888b       `?8b   88b          `?8b 88b     88b  88b 88b     d88        `?8b
+    d88'`?88P'`?888P'`?888P'   `?8b      `?888P' `?888P'  88b  88b`?888P'd88'     `?888P'
+    --------------------------------------------------------------------------------------
+    """
+    print(header)
+
+    url = 'https://www.midheaven.com/top-selling'
+    html = requests.get(url).text
+    soup = BeautifulSoup(html, 'html5lib')
+    records = soup.find_all("div", class_="uk-panel uk-panel-box")
+
+    if oldest_first:
+        records = records[::-1]
+
+    for ix, record in enumerate(records):
+        artist = try_except(lambda: record.find(
+            'h4').text.strip(), 'artist')
+        album = try_except(lambda: record.find(
+            'h5').text.strip(), 'album')
+        label = try_except(lambda: record.find(
+            'h6').text.strip(), 'label')
+        href = try_except(lambda: record.find(
+            'div', class_='uk-panel-teaser').find(
+                'a').attrs['href'].strip(), 'link')
+
+        if 'Unknown link' not in href:
+            link = 'http://www.midheaven.com{}'.format(href)
+
+            # visit the review page to get genre, rating, & review lede
+            review_html = requests.get(link).text
+            review = BeautifulSoup(review_html, 'html5lib')
+
+            lede = try_except(lambda: review.find(
+                'div', class_='item-meta').text.strip(), 'review')
+
+        if oldest_first:
+            ix = len(records) - ix - 1
+
+        entry = {'artist': artist, 'album': album, 'label': label, 'link':
+                 link, 'lede': lede, 'index': '{}. '.format(ix + 1)}
+
+        print_record(**entry)
+
+
+def metacritic(oldest_first=False):
+    header = """
+                  .-.
+                    /|/|         /                   .-.    /  .-.
+                   /   |  .-.---/---.-.  .-.    ).--.`-'---/---`-'.-.
+                  /    |./.-'_ /   (  | (      /    /     /   /  (
+             .-' /     |(__.' /     `-'-'`---'/  _.(__.  / _.(__. `---'
+            (__.'      `.
+       .-.                             .-.
+      (_) )-.                /           /|/|         /
+         / __)    .-.  . ---/---        /   |  .-.---/---.-.    .  .-.  .-._.).--..-.
+        /    `. ./.-'_/ \  /           /    |./.-'_ /   (  |   / \(    (   )/   ./.-'_
+       /'      )(__.'/ ._)/       .-' /     |(__.' /     `-'-'/ ._)`---'`-'/    (__.'
+    (_/  `----'     /            (__.'      `.               /
+    ---------------------------------------------------------------------------------
+    """
+    print(header)
+
+    url = 'http://www.metacritic.com/browse/albums/release-date/new-releases/metascore?view=detailed'
+    html = render(url)
+    soup = BeautifulSoup(html, 'html5lib')
+    records = soup.find_all("div", class_="product_basics stats")
+
+    if oldest_first:
+        records = records[::-1]
+
+    for ix, record in enumerate(records):
+        album = try_except(lambda: record.find(
+            'h3', class_='product_title').find('a').text.strip(), 'album')
+        artist = try_except(lambda: record.find(
+            'span', class_='product_artist').text.split(' - ')[-1].strip(), 'artist')
+        genres = try_except(lambda: record.find(
+            'li', class_='stat genre').find(
+                'span', class_='data').text.split(', '), 'genre')
+        href = try_except(lambda: record.find(
+            'h3', class_='product_title').find(
+                'a').attrs['href'].strip(), 'link')
+        rating = try_except(lambda: record.find(
+            'a', class_='basic_stat product_score').text.strip(), 'rating')
+
+        genre = try_except(
+            lambda: [g.strip() for g in genres], 'genre')
+
+        if isinstance(genre, list):
+            genre = ' / '.join([g for g in genre if '...' not in g])
+
+        if 'Unknown link' not in href:
+            link = 'http://www.metacritic.com{}'.format(href)
+
+            # visit the review page to get genre, rating, & review lede
+            review_html = render(link)
+            review = BeautifulSoup(review_html, 'html5lib')
+
+            lede = try_except(lambda: review.find(
+                'li', class_='summary_detail product_summary').find(
+                'span', class_='data').text.strip(), 'review')
+            label = try_except(lambda: review.find(
+                'li', class_='summary_detail product_company').find(
+                'span', class_='data').text.strip(), 'label')
+
+        if oldest_first:
+            ix = len(records) - ix - 1
+
+        entry = {'artist': artist, 'album': album, 'label': label,
+                 'genre': genre, 'link': link, 'lede': lede, 'rating': rating,
                  'index': '{}. '.format(ix + 1)}
 
         print_record(**entry)
