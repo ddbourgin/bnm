@@ -394,6 +394,7 @@ def midheaven(oldest_first=False):
     html = requests.get(url).text
     soup = BeautifulSoup(html, 'html5lib')
     records = soup.find_all("div", class_="uk-panel uk-panel-box")
+    records = records[:35]
 
     if oldest_first:
         records = records[::-1]
