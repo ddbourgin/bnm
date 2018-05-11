@@ -12,10 +12,12 @@ Lists are compiled from:
 - [AllMusic Editor's Choice](https://www.allmusic.com/newreleases/editorschoice)
 - [Forced Exposure Best Sellers](https://forcedexposure.com/Best/BestIndex.html)
 - [Boomkat Best Sellers](https://boomkat.com/bestsellers)
+- [Midheaven Weekly Best Sellers](https://www.midheaven.com/top-selling)
+- [Metacritic Top Metascore](http://www.metacritic.com/browse/albums/release-date/new-releases/metascore)
 
 ## Installation
 ### OSX
-Some commands use chromedriver with Selenium to render webpages. On OSX, the easiest way to install these (if you don't have them already) is to use homebrew:
+Some commands use Selenium and chromedriver to render Javascript-driven pages. On OSX, the easiest way to install these (if you don't have them already) is to use homebrew:
 ```
 brew update
 brew cask install google-chrome
@@ -26,12 +28,12 @@ pip install bestnewmusic
 ```
 
 ### Ubuntu
-Install the [google-chrome-stable](https://www.ubuntuupdates.org/ppa/google_chrome?dist=stable) package from the Google Linux repo along with `xvfb` so we can run it headlessly:
-```bash
+Install the [google-chrome-stable](https://www.ubuntuupdates.org/ppa/google_chrome?dist=stable) package from the Google Linux repo:
+```
 wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add - 
 sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
 sudo apt-get update 
-sudo apt-get install unzip google-chrome-stable xvfb
+sudo apt-get install google-chrome-stable
 ```
 
 Install the bestnewmusic package with pip:
@@ -59,4 +61,14 @@ bnm p4k
 ### Boomkat Best Sellers
 ```bash
 bnm bk
+```
+
+### Midheaven Best Sellers
+```bash
+bnm mh
+```
+
+### Metacritic Top Metascore
+```bash
+bnm mc
 ```
