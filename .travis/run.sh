@@ -5,7 +5,7 @@ if [ "$TRAVIS_OS_NAME" == "osx" ]; then
     export PATH="/Users/travis/.pyenv/shims:${PATH}"
     pyenv virtualenv venv
     source venv/bin/activate
-    tox
+    tox --skip-missing-interpreters
 else
     tox
 fi
