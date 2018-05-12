@@ -21,7 +21,5 @@ matrix:
           env: PYENV_VERSION=3.5.2
 before_install:
     - ./.travis/install.sh
-# install:
-#   - pip install tox-travis
 script:
-  - tox
+    - ./.travis/run.sh
