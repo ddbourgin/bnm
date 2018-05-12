@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
 import argparse
-from .sources import (allmusic, pitchfork, resident_advisor, forced_exposure,
-                      boomkat, metacritic, midheaven)
+
+from .sources import (allmusic, boomkat, forced_exposure, metacritic,
+                      midheaven, pitchfork, resident_advisor)
 
 choices = ['am', 'p4k', 'ra', 'bk', 'fe', 'mc', 'mh']
 

@@ -2,12 +2,12 @@
 from __future__ import print_function
 
 import textwrap
+
 import requests
-
-from termcolor import colored
 from bs4 import BeautifulSoup
+from termcolor import colored
 
-from .util import try_except, render
+from .util import render, try_except
 
 
 def print_record(**kwargs):

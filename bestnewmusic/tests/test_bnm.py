@@ -1,5 +1,5 @@
-import sys
 import os
+import sys
 
 from .util import run_command
 

@@ -1,6 +1,7 @@
-from setuptools import setup
 from codecs import open
 from os import path
+
+from setuptools import setup
 
 here = path.abspath(path.dirname(__file__))
 
@@ -14,7 +15,7 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/ddbourgin/bestnewmusic',
-    version='0.2',
+    version='0.3',
     author='David Bourgin',
     author_email='ddbourgin@gmail.com',
     license='MIT',
