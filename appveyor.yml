@@ -33,7 +33,8 @@ install:
 
   # Install Python (from the official .msi of http://python.org) and pip when
   # not already installed.
-  - ps: if (-not(Test-Path($env:PYTHON))) { & appveyor\install.ps1 }
+  - "powershell ./appveyor/install.ps1"
+  # - ps: if (-not(Test-Path($env:PYTHON))) { & appveyor\install.ps1 }
 
   # Prepend newly installed Python to the PATH of this build (this cannot be
   # done from inside the powershell script as it would require to restart
@@ -44,22 +45,23 @@ install:
 
   # Upgrade to the latest version of pip to avoid it displaying warnings
   # about it being out of date.
-  - "python -m pip install --upgrade pip"
+  # - "python -m pip install --upgrade pip"
 
   # Install tox testing suite
-  - "%CMD_IN_ENV% python -m pip install --upgrade --pre tox"
-  - "%CMD_IN_ENV% python -m pip install --upgrade wheel"
+  # - "%CMD_IN_ENV% python -m pip install --upgrade --pre tox"
+  # - "%CMD_IN_ENV% python -m pip install --upgrade wheel"
 
   # Install and early check enable extensions before the actual tests
-  - "%CMD_IN_ENV% python setup.py install"
+  # - "%CMD_IN_ENV% python setup.py install"
 
 # Skip .NET project specific build phase.
-build: off
+build: false
+
+before_test:
+  - "%CMD_IN_ENV% pip install tox"
 
 test_script:
   - "%CMD_IN_ENV% tox -e %TOX_ENV%"
-  # - "%CMD_IN_ENV% misc\windows-build.cmd %PYTHON%\Scripts\tox.exe -e py"
-  # - '%WITH_COMPILER% %PYTHON_HOME%\Scripts\tox'
 
-artifacts:
-  - path: dist\*
+# artifacts:
+#   - path: dist\*
