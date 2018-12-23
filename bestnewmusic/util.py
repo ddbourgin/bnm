@@ -4,7 +4,7 @@ from selenium.common.exceptions import TimeoutException
 
 def render(query_url, page_load_timeout=30):
     options = webdriver.ChromeOptions()
-    options.add_argument('headless')
+    options.add_argument("headless")
     browser = webdriver.Chrome(chrome_options=options)
     browser.set_page_load_timeout(page_load_timeout)
 
@@ -21,6 +21,6 @@ def render(query_url, page_load_timeout=30):
 def try_except(f, field):
     try:
         out = f()
-    except (AttributeError, TypeError, IndexError) as e:
-        out = 'Unknown {}'.format(field)
+    except (AttributeError, TypeError, IndexError):
+        out = "Unknown {}".format(field)
     return out
