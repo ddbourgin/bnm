@@ -12,7 +12,7 @@ Lists are compiled from:
 - [Forced Exposure Best Sellers](https://forcedexposure.com/Best/BestIndex.html)
 - [Boomkat Best Sellers](https://boomkat.com/bestsellers)
 - [Midheaven Weekly Best Sellers](https://www.midheaven.com/top-selling)
-- [Metacritic Top Metascore](http://www.metacritic.com/browse/albums/release-date/new-releases/metascore)
+- [WFMU Heavily Played Records](http://www.wfmu.org/Playlists/Wfmu/#t)
 
 ## Installation
 ### OSX
@@ -41,33 +41,33 @@ pip install bestnewmusic
 ```
 
 ## Usage
-### AllMusic Editor's Choice
+#### AllMusic Editor's Choice
 ```bash
 bnm am
 ```
-### Resident Advisor Recommends
+#### Resident Advisor Recommends
 ```bash
 bnm ra
 ```
-### Forced Exposure Best Sellers
+#### Forced Exposure Best Sellers
 ```bash
 bnm fe
 ```
-### Pitchfork 8.0+ Reviews
+#### Pitchfork 8.0+ Reviews
 ```bash
 bnm p4k
 ```
-### Boomkat Best Sellers
+#### Boomkat Best Sellers
 ```bash
 bnm bk
 ```
 
-### Midheaven Best Sellers
+#### Midheaven Best Sellers
 ```bash
 bnm mh
 ```
 
-### Metacritic Top Metascore
+#### WFMU Heavily Played Records
 ```bash
-bnm mc
+bnm wfmu
 ```
