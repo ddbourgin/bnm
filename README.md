@@ -5,7 +5,7 @@ View recent highly rated albums in the terminal.
 
 ![bnm](images/bnm.gif "bnm p4k")
 
-Lists are compiled from:
+`bnm` supports the following sources:
 - [Pitchfork 8.0+ Albums](https://pitchfork.com/best/high-scoring-albums/)
 - [Resident Advisor Recommends](https://www.residentadvisor.net/reviews.aspx?format=recommend)
 - [AllMusic Editor's Choice](https://www.allmusic.com/newreleases/editorschoice)
@@ -35,7 +35,7 @@ sudo apt-get update
 sudo apt-get install google-chrome-stable
 ```
 
-Install the bestnewmusic package with pip:
+Install `bnm` with pip:
 ```
 pip install bestnewmusic
 ```
