@@ -18,11 +18,11 @@ def print_record(**kwargs):
     if "index" not in kwargs:
         kwargs["index"] = ""
 
-    artist = kwargs["artist"].encode("utf-8").decode()
-    album = kwargs["album"].encode("utf-8").decode()
-    label = kwargs["label"].encode("utf-8").decode()
-    symbol = kwargs["symbol"].encode("utf-8").decode()
-    index = kwargs["index"].encode("utf-8").decode()
+    artist = kwargs["artist"].encode("utf-8").decode("utf-8")
+    album = kwargs["album"].encode("utf-8").decode("utf-8")
+    label = kwargs["label"].encode("utf-8").decode("utf-8")
+    symbol = kwargs["symbol"].encode("utf-8").decode("utf-8")
+    index = kwargs["index"].encode("utf-8").decode("utf-8")
 
     album = colored(album.strip(), "yellow")
     artist = colored(artist.strip(), "red", attrs=["bold", "dark"])
@@ -38,12 +38,12 @@ def print_record(**kwargs):
         print("    {}".format(status))
 
     if "genre" in kwargs:
-        genre = kwargs["genre"].encode("utf-8").decode()
+        genre = kwargs["genre"].encode("utf-8").decode("utf-8")
         genre = colored(genre, "blue", attrs=["bold", "dark"])
         print("    {}".format(genre))
 
     if "rating" in kwargs:
-        rating = kwargs["rating"].encode("utf-8").decode()
+        rating = kwargs["rating"].encode("utf-8").decode("utf-8")
         ul_rating = colored("Rating", attrs=["underline"])
         print("    {}: {}".format(ul_rating, rating))
 
@@ -55,17 +55,17 @@ def print_record(**kwargs):
         lede = (
             "\n    ".join(textwrap.wrap(kwargs["lede"], width=70))
             .encode("utf-8")
-            .decode()
+            .decode("utf-8")
         )
         print('    "{}"'.format(lede))
 
     if "link" in kwargs:
-        link = kwargs["link"].encode("utf-8").decode()
+        link = kwargs["link"].encode("utf-8").decode("utf-8")
         link = colored(link.strip(), "blue")
         print("    {}\n".format(link))
 
 
-def allmusic(oldest_first=False):
+def allmusic(oldest_first=False, n_items=None):
     header = """
                _ _ __  __           _
          /\   | | |  \/  |         (_)
@@ -102,7 +102,10 @@ def allmusic(oldest_first=False):
     if oldest_first:
         records = records[::-1]
 
-    for record in records:
+    for ix, record in enumerate(records):
+        if n_items and ix == n_items:
+            break
+
         artist = try_except(
             lambda: record.find("div", class_="artist").text.strip(), "artist"
         )
@@ -143,7 +146,7 @@ def allmusic(oldest_first=False):
         print_record(**entry)
 
 
-def forced_exposure(oldest_first=False):
+def forced_exposure(oldest_first=False, n_items=None):
     header = """
      ___  __   __   __   ___  __      ___      __   __   __        __   ___
     |__  /  \ |__) /  ` |__  |  \    |__  \_/ |__) /  \ /__` |  | |__) |__
@@ -165,6 +168,9 @@ def forced_exposure(oldest_first=False):
         indices = reversed(indices)
 
     for ix in indices:
+        if n_items and (ix - 2) == n_items:
+            break
+
         ix = "0" + str(ix) if ix <= 9 else ix
         prefix = "ctl00_ContentPlaceHolder1_gvRecBestSeller_ctl{}_".format(ix)
 
@@ -211,7 +217,7 @@ def forced_exposure(oldest_first=False):
         print_record(**entry)
 
 
-def pitchfork(n_pages=2, oldest_first=False):
+def pitchfork(n_pages=2, oldest_first=False, n_items=None):
     header = """
            ___ _ _       _      __            _
           / _ (_) |_ ___| |__  / _| ___  _ __| | __
@@ -231,6 +237,7 @@ def pitchfork(n_pages=2, oldest_first=False):
     if oldest_first:
         pages = reversed(pages)
 
+    ix = -1
     for pn in pages:
         url = "https://pitchfork.com/best/high-scoring-albums/?page={}".format(pn)
         html = requests.get(url).text
@@ -241,6 +248,10 @@ def pitchfork(n_pages=2, oldest_first=False):
             records = records[::-1]
 
         for record in records:
+            ix += 1
+            if n_items and ix >= n_items:
+                break
+
             albums = record.find_all("h2", class_="review__title-album")
             genres = record.find_all("a", class_="genre-list__link")
             bnms = record.find_all("a", class_="review__meta-bnm")
@@ -314,7 +325,7 @@ def pitchfork(n_pages=2, oldest_first=False):
     print("{} = Best New Reissue".format(colored("**", "red", attrs=["bold"])))
 
 
-def resident_advisor(oldest_first=False):
+def resident_advisor(oldest_first=False, n_items=None):
     header = """
        __    _       __                                                   _
       /__\  /_\     /__\ ___  ___ ___  _ __ ___  _ __ ___   ___ _ __   __| |___
@@ -333,7 +344,10 @@ def resident_advisor(oldest_first=False):
     if oldest_first:
         records = records[::-1]
 
-    for record in records:
+    for ix, record in enumerate(records):
+        if n_items and ix == n_items:
+            break
+
         title = try_except(lambda: record.find("h1").text.strip(), "album")
         artist, album = ("Unknown artist", "Unknown album")
 
@@ -388,7 +402,7 @@ def resident_advisor(oldest_first=False):
         print_record(**entry)
 
 
-def boomkat(period="last-week", oldest_first=False):
+def boomkat(period="last-week", oldest_first=False, n_items=None):
     header = """
         ____                        __         __
        / __ )____  ____  ____ ___  / /______ _/ /_
@@ -415,6 +429,9 @@ def boomkat(period="last-week", oldest_first=False):
         records = records[::-1]
 
     for ix, record in enumerate(records):
+        if n_items and ix == n_items:
+            break
+
         titles = try_except(
             lambda: record.find("div", class_="product-name").text.strip(), "album"
         )
@@ -460,13 +477,16 @@ def boomkat(period="last-week", oldest_first=False):
         print_record(**entry)
 
 
-def wfmu(oldest_first=False):
-    def print_airplay_list(tds, list_ix, name):
+def wfmu(oldest_first=False, n_items=None):
+    def print_airplay_list(tds, list_ix, name, n_items):
         print("")
         print(colored("{} AIRPLAY".format(name.upper()), attrs=["underline"]))
         entries = list(tds[list_ix].find("td", class_="mcnTextContent").children)
         enum = 1
         for ix, entry in enumerate(entries):
+            if n_items and enum == n_items + 1:
+                break
+
             if entry.name in ["strong", "div"]:
                 if entry.name == "div":
                     artist, rest = entry.text.split(" - ")
@@ -524,14 +544,14 @@ def wfmu(oldest_first=False):
 
     for ix, td in enumerate(tds):
         if "heavy airplay" in td.text.lower():
-            print_airplay_list(tds, next_entry(ix), "heavy")
+            print_airplay_list(tds, next_entry(ix), "heavy", n_items)
         elif "medium airplay" in td.text.lower():
-            print_airplay_list(tds, next_entry(ix), "medium")
+            print_airplay_list(tds, next_entry(ix), "medium", n_items)
         elif "light airplay" in td.text.lower():
-            print_airplay_list(tds, next_entry(ix), "light")
+            print_airplay_list(tds, next_entry(ix), "light", n_items)
 
 
-def midheaven(oldest_first=False):
+def midheaven(oldest_first=False, n_items=None):
     header = """
                     d8,      d8b  d8b
                    `8P       88P  ?88
@@ -560,6 +580,9 @@ def midheaven(oldest_first=False):
         records = records[::-1]
 
     for ix, record in enumerate(records):
+        if n_items and ix == n_items:
+            break
+
         artist = try_except(lambda: record.find("h4").text.strip(), "artist")
         album = try_except(lambda: record.find("h5").text.strip(), "album")
         label = try_except(lambda: record.find("h6").text.strip(), "label")
