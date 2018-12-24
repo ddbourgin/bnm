@@ -11,11 +11,11 @@ with open(path.join(here, "README.md"), encoding="utf-8") as f:
 
 setup(
     name="bestnewmusic",
-    description="View editor selections from music review sites in the terminal",
+    description="View music reviews and weekly radio charts in the terminal",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/ddbourgin/bestnewmusic",
-    version="0.4",
+    version="0.4.1",
     author="David Bourgin",
     author_email="ddbourgin@gmail.com",
     license="MIT",
@@ -34,7 +34,6 @@ setup(
         "Development Status :: 3 - Alpha",
         "License :: OSI Approved :: MIT License",
         "Environment :: Console",
-        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
