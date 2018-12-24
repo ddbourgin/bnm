@@ -27,7 +27,7 @@ def print_record(**kwargs):
     album = colored(album.strip(), "yellow")
     artist = colored(artist.strip(), "red", attrs=["bold", "dark"])
 
-    print(u"{}{} :: {} ({}){}".format(index, artist, album, label, symbol))
+    print("{}{} :: {} ({}){}".format(index, artist, album, label, symbol))
 
     if "status" in kwargs:
         status = kwargs["status"]
@@ -35,17 +35,17 @@ def print_record(**kwargs):
             status = colored(status, "red")
         elif status == "LOW STOCK LEVEL":
             status = colored(status, "magenta")
-        print(u"    {}".format(status))
+        print("    {}".format(status))
 
     if "genre" in kwargs:
         genre = kwargs["genre"]  # .encode("utf-8").decode("utf-8")
         genre = colored(genre, "blue", attrs=["bold", "dark"])
-        print(u"    {}".format(genre))
+        print("    {}".format(genre))
 
     if "rating" in kwargs:
         rating = kwargs["rating"]  # .encode("utf-8").decode("utf-8")
         ul_rating = colored("Rating", attrs=["underline"])
-        print(u"    {}: {}".format(ul_rating, rating))
+        print("    {}: {}".format(ul_rating, rating))
 
     if "lede" in kwargs:
         # truncate lede at 500 characters
@@ -53,11 +53,11 @@ def print_record(**kwargs):
             kwargs["lede"] = kwargs["lede"][:500] + " ..."
 
         lede = (
-            u"\n    ".join(textwrap.wrap(kwargs["lede"], width=70))
+            "\n    ".join(textwrap.wrap(kwargs["lede"], width=70))
             # .encode("utf-8")
             # .decode("utf-8")
         )
-        print(u'    "{}"'.format(lede))
+        print('    "{}"'.format(lede))
 
     if "link" in kwargs:
         link = kwargs["link"].encode("utf-8").decode("utf-8")
