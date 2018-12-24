@@ -2,6 +2,7 @@
 from __future__ import print_function
 
 import textwrap
+import time
 
 import requests
 from bs4 import BeautifulSoup
@@ -17,11 +18,11 @@ def print_record(**kwargs):
     if "index" not in kwargs:
         kwargs["index"] = ""
 
-    artist = kwargs["artist"].encode("utf-8")
-    album = kwargs["album"].encode("utf-8")
-    label = kwargs["label"].encode("utf-8")
-    symbol = kwargs["symbol"].encode("utf-8")
-    index = kwargs["index"].encode("utf-8")
+    artist = kwargs["artist"].encode("utf-8").decode()
+    album = kwargs["album"].encode("utf-8").decode()
+    label = kwargs["label"].encode("utf-8").decode()
+    symbol = kwargs["symbol"].encode("utf-8").decode()
+    index = kwargs["index"].encode("utf-8").decode()
 
     album = colored(album.strip(), "yellow")
     artist = colored(artist.strip(), "red", attrs=["bold", "dark"])
@@ -37,12 +38,12 @@ def print_record(**kwargs):
         print("    {}".format(status))
 
     if "genre" in kwargs:
-        genre = kwargs["genre"].encode("utf-8")
+        genre = kwargs["genre"].encode("utf-8").decode()
         genre = colored(genre, "blue", attrs=["bold", "dark"])
         print("    {}".format(genre))
 
     if "rating" in kwargs:
-        rating = kwargs["rating"].encode("utf-8")
+        rating = kwargs["rating"].encode("utf-8").decode()
         ul_rating = colored("Rating", attrs=["underline"])
         print("    {}: {}".format(ul_rating, rating))
 
@@ -51,11 +52,15 @@ def print_record(**kwargs):
         if len(kwargs["lede"]) > 500:
             kwargs["lede"] = kwargs["lede"][:500] + " ..."
 
-        lede = "\n    ".join(textwrap.wrap(kwargs["lede"], width=70)).encode("utf-8")
+        lede = (
+            "\n    ".join(textwrap.wrap(kwargs["lede"], width=70))
+            .encode("utf-8")
+            .decode()
+        )
         print('    "{}"'.format(lede))
 
     if "link" in kwargs:
-        link = kwargs["link"].encode("utf-8")
+        link = kwargs["link"].encode("utf-8").decode()
         link = colored(link.strip(), "blue")
         print("    {}\n".format(link))
 
@@ -457,6 +462,7 @@ def boomkat(period="last-week", oldest_first=False):
 
 def wfmu(oldest_first=False):
     def print_airplay_list(tds, list_ix, name):
+        print("")
         print(colored("{} AIRPLAY".format(name.upper()), attrs=["underline"]))
         entries = list(tds[list_ix].find("td", class_="mcnTextContent").children)
         enum = 1
@@ -479,11 +485,22 @@ def wfmu(oldest_first=False):
                     "index": "\t{:>2}. ".format(enum),
                 }
                 print_record(**entry)
+                time.sleep(0.15)
                 enum += 1
 
-    header = "WFMU Charts"
-    print(header)
+    header = """
+       888       888 8888888888 888b     d888 888     888
+       888   o   888 888        8888b   d8888 888     888
+       888  d8b  888 888        88888b.d88888 888     888
+       888 d888b 888 8888888    888Y88888P888 888     888
+       888d88888b888 888        888 Y888P 888 888     888
+       88888P Y88888 888        888  Y8P  888 888     888
+       8888P   Y8888 888        888   "   888 Y88b. .d88P
+       888P     Y888 888        888       888  "Y88888P"
 
+    Weekly Charts: {}
+    {}
+    """
     url = "http://www.wfmu.org/Playlists/Wfmu"
     html = requests.get(url).text
     soup = BeautifulSoup(html, "html5lib")
@@ -502,18 +519,15 @@ def wfmu(oldest_first=False):
         tds = tds[::-1]
         next_entry = lambda x: x - 1
 
-    print(week_id)
-    print(colored("{}\n".format(week_url), "blue"))
+    week_url = colored("{}\n".format(week_url), "blue")
+    print(header.format(week_id, week_url))
 
     for ix, td in enumerate(tds):
         if "heavy airplay" in td.text.lower():
-            print("")
             print_airplay_list(tds, next_entry(ix), "heavy")
         elif "medium airplay" in td.text.lower():
-            print("")
             print_airplay_list(tds, next_entry(ix), "medium")
         elif "light airplay" in td.text.lower():
-            print("")
             print_airplay_list(tds, next_entry(ix), "light")
 
 
