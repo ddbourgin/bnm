@@ -18,16 +18,16 @@ def print_record(**kwargs):
     if "index" not in kwargs:
         kwargs["index"] = ""
 
-    artist = kwargs["artist"].encode("utf-8").decode("utf-8")
-    album = kwargs["album"].encode("utf-8").decode("utf-8")
-    label = kwargs["label"].encode("utf-8").decode("utf-8")
-    symbol = kwargs["symbol"].encode("utf-8").decode("utf-8")
-    index = kwargs["index"].encode("utf-8").decode("utf-8")
+    artist = kwargs["artist"]  # .encode("utf-8").decode("utf-8")
+    album = kwargs["album"]  # .encode("utf-8").decode("utf-8")
+    label = kwargs["label"]  # .encode("utf-8").decode("utf-8")
+    symbol = kwargs["symbol"]  # .encode("utf-8").decode("utf-8")
+    index = kwargs["index"]  # .encode("utf-8").decode("utf-8")
 
     album = colored(album.strip(), "yellow")
     artist = colored(artist.strip(), "red", attrs=["bold", "dark"])
 
-    print("{}{} :: {} ({}){}".format(index, artist, album, label, symbol))
+    print(u"{}{} :: {} ({}){}".format(index, artist, album, label, symbol))
 
     if "status" in kwargs:
         status = kwargs["status"]
@@ -35,17 +35,17 @@ def print_record(**kwargs):
             status = colored(status, "red")
         elif status == "LOW STOCK LEVEL":
             status = colored(status, "magenta")
-        print("    {}".format(status))
+        print(u"    {}".format(status))
 
     if "genre" in kwargs:
-        genre = kwargs["genre"].encode("utf-8").decode("utf-8")
+        genre = kwargs["genre"]  # .encode("utf-8").decode("utf-8")
         genre = colored(genre, "blue", attrs=["bold", "dark"])
-        print("    {}".format(genre))
+        print(u"    {}".format(genre))
 
     if "rating" in kwargs:
-        rating = kwargs["rating"].encode("utf-8").decode("utf-8")
+        rating = kwargs["rating"]  # .encode("utf-8").decode("utf-8")
         ul_rating = colored("Rating", attrs=["underline"])
-        print("    {}: {}".format(ul_rating, rating))
+        print(u"    {}: {}".format(ul_rating, rating))
 
     if "lede" in kwargs:
         # truncate lede at 500 characters
@@ -53,11 +53,11 @@ def print_record(**kwargs):
             kwargs["lede"] = kwargs["lede"][:500] + " ..."
 
         lede = (
-            "\n    ".join(textwrap.wrap(kwargs["lede"], width=70))
-            .encode("utf-8")
-            .decode("utf-8")
+            u"\n    ".join(textwrap.wrap(kwargs["lede"], width=70))
+            # .encode("utf-8")
+            # .decode("utf-8")
         )
-        print('    "{}"'.format(lede))
+        print(u'    "{}"'.format(lede))
 
     if "link" in kwargs:
         link = kwargs["link"].encode("utf-8").decode("utf-8")

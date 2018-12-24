@@ -13,9 +13,6 @@ matrix:
           dist: trusty
           sudo: true
           python: 3.7-dev
-        - os: osx
-          language: objective-c
-          env: PYENV_VERSION=2.7.12
 before_install:
     - ./.travis/install.sh
 script:
