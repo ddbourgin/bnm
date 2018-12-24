@@ -18,11 +18,11 @@ def print_record(**kwargs):
     if "index" not in kwargs:
         kwargs["index"] = ""
 
-    artist = kwargs["artist"].encode("utf-8").decode("utf-8")
-    album = kwargs["album"].encode("utf-8").decode("utf-8")
-    label = kwargs["label"].encode("utf-8").decode("utf-8")
-    symbol = kwargs["symbol"].encode("utf-8").decode("utf-8")
-    index = kwargs["index"].encode("utf-8").decode("utf-8")
+    artist = kwargs["artist"].encode("utf-8")  # .decode("utf-8")
+    album = kwargs["album"].encode("utf-8")  # .decode("utf-8")
+    label = kwargs["label"].encode("utf-8")  # .decode("utf-8")
+    symbol = kwargs["symbol"].encode("utf-8")  # .decode("utf-8")
+    index = kwargs["index"].encode("utf-8")  # .decode("utf-8")
 
     album = colored(album.strip(), "yellow")
     artist = colored(artist.strip(), "red", attrs=["bold", "dark"])
@@ -38,12 +38,12 @@ def print_record(**kwargs):
         print("    {}".format(status))
 
     if "genre" in kwargs:
-        genre = kwargs["genre"].encode("utf-8").decode("utf-8")
+        genre = kwargs["genre"].encode("utf-8")  # .decode("utf-8")
         genre = colored(genre, "blue", attrs=["bold", "dark"])
         print("    {}".format(genre))
 
     if "rating" in kwargs:
-        rating = kwargs["rating"].encode("utf-8").decode("utf-8")
+        rating = kwargs["rating"].encode("utf-8")  # .decode("utf-8")
         ul_rating = colored("Rating", attrs=["underline"])
         print("    {}: {}".format(ul_rating, rating))
 
@@ -53,14 +53,13 @@ def print_record(**kwargs):
             kwargs["lede"] = kwargs["lede"][:500] + " ..."
 
         lede = (
-            "\n    ".join(textwrap.wrap(kwargs["lede"], width=70))
-            .encode("utf-8")
-            .decode("utf-8")
+            "\n    ".join(textwrap.wrap(kwargs["lede"], width=70)).encode("utf-8")
+            # .decode("utf-8")
         )
         print('    "{}"'.format(lede))
 
     if "link" in kwargs:
-        link = kwargs["link"].encode("utf-8").decode("utf-8")
+        link = kwargs["link"].encode("utf-8")  # .decode("utf-8")
         link = colored(link.strip(), "blue")
         print("    {}\n".format(link))
 
