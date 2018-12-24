@@ -41,33 +41,36 @@ pip install bestnewmusic
 ```
 
 ## Usage
-#### AllMusic Editor's Choice
-```bash
-bnm am
 ```
-#### Resident Advisor Recommends
-```bash
-bnm ra
-```
-#### Forced Exposure Best Sellers
-```bash
-bnm fe
-```
-#### Pitchfork 8.0+ Reviews
-```bash
-bnm p4k
-```
-#### Boomkat Best Sellers
-```bash
-bnm bk
+usage: bnm [-h] [-r] [-l LENGTH] {am, p4k, ra, bk, fe, mh, wfmu}
+
+positional arguments:
+  {am,p4k,ra,bk,fe,mh,wfmu}
+    - am   : AllMusic Editor's Choice
+    - p4k  : Pitchfork 8.0+ Albums
+    - ra   : Resident Advisor Recommends
+    - bk   : Boomkat Weekly Best Sellers
+    - mh   : Midheaven Weekly Best Sellers
+    - fe   : Forced Exposure Weekly Best Sellers
+    - wfmu : WFMU Weekly Charts
+
+optional arguments:
+  -h, --help            Show this help message and exit
+  -r, --reverse         Display items in reverse order (with most recent last)
+  -l, --length          Number of items to display
 ```
 
-#### Midheaven Best Sellers
-```bash
-bnm mh
-```
-
-#### WFMU Heavily Played Records
+## Example
+Show the WFMU weekly play charts for the current week, organized by frequency:
 ```bash
 bnm wfmu
+```
+Show the first five most recent 8.0+ albums on Pitchfork (incl. reissues):
+```bash
+bnm p4k -l 5
+```
+Show the weekly bestsellers on Forced Exposure, ordered from least to most
+popular:
+```bash
+bnm fe -r
 ```
