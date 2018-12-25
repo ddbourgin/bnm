@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import textwrap
 import time
+import os.path as op
 
 import requests
 from bs4 import BeautifulSoup
@@ -51,7 +52,7 @@ def print_record(**kwargs):
     if "lede" in kwargs:
         #  truncate lede at 500 characters
         if len(kwargs["lede"]) > 500:
-            kwargs["lede"] = kwargs["lede"][:500] + " ..."
+            kwargs["lede"] = kwargs["lede"][:500].strip() + " ..."
 
         lede = (
             "\n    ".join(textwrap.wrap(kwargs["lede"], width=70))
@@ -61,7 +62,7 @@ def print_record(**kwargs):
         print('    "{}"'.format(lede))
 
     if "link" in kwargs:
-        link = kwargs["link"].encode("utf-8")  # .decode("utf-8")
+        link = kwargs["link"].encode("utf-8").decode("utf-8")
         link = colored(link.strip(), "blue")
         print("    {}\n".format(link))
 
@@ -482,19 +483,19 @@ def wfmu(oldest_first=False, n_items=None):
     def print_airplay_list(tds, list_ix, name, n_items):
         print("")
         print(colored("{} AIRPLAY".format(name.upper()), attrs=["underline"]))
-        entries = list(tds[list_ix].find("td", class_="mcnTextContent").children)
+        records = list(tds[list_ix].find("td", class_="mcnTextContent").children)
         enum = 1
-        for ix, entry in enumerate(entries):
+        for ix, record in enumerate(records):
             if n_items and enum == n_items + 1:
                 break
 
-            if entry.name in ["strong", "div"]:
-                if entry.name == "div":
-                    artist, rest = entry.text.split(" - ")
+            if record.name in ["strong", "div"]:
+                if record.name == "div":
+                    artist, rest = record.text.split(" - ")
                     artist = artist.strip().title()
                 else:
-                    artist = entry.text.strip().title()
-                    rest = entries[ix + 1]
+                    artist = record.text.strip().title()
+                    rest = records[ix + 1]
 
                 album, label = rest.rsplit("(", 1)
                 album = album.strip().replace("-", "").strip()
@@ -503,25 +504,25 @@ def wfmu(oldest_first=False, n_items=None):
                     "artist": artist,
                     "album": album,
                     "label": label,
-                    "index": "\t{:>2}. ".format(enum),
+                    "index": "    {:>2}. ".format(enum),
                 }
                 print_record(**entry)
                 time.sleep(0.15)
                 enum += 1
 
     header = """
-       888       888 8888888888 888b     d888 888     888
-       888   o   888 888        8888b   d8888 888     888
-       888  d8b  888 888        88888b.d88888 888     888
-       888 d888b 888 8888888    888Y88888P888 888     888
-       888d88888b888 888        888 Y888P 888 888     888
-       88888P Y88888 888        888  Y8P  888 888     888
-       8888P   Y8888 888        888   "   888 Y88b. .d88P
-       888P     Y888 888        888       888  "Y88888P"
+    888       888 8888888888 888b     d888 888     888
+    888   o   888 888        8888b   d8888 888     888
+    888  d8b  888 888        88888b.d88888 888     888
+    888 d888b 888 8888888    888Y88888P888 888     888
+    888d88888b888 888        888 Y888P 888 888     888
+    88888P Y88888 888        888  Y8P  888 888     888
+    8888P   Y8888 888        888   "   888 Y88b. .d88P
+    888P     Y888 888        888       888  "Y88888P"
 
-    Weekly Charts: {}
+    Most Played: Week of {}
     {}
-    """
+    {}"""
     url = "http://www.wfmu.org/Playlists/Wfmu"
     html = requests.get(url).text
     soup = BeautifulSoup(html, "html5lib")
@@ -540,8 +541,8 @@ def wfmu(oldest_first=False, n_items=None):
         tds = tds[::-1]
         next_entry = lambda x: x - 1
 
-    week_url = colored("{}\n".format(week_url), "blue")
-    print(header.format(week_id, week_url))
+    week_url = colored("{}".format(week_url), "blue")
+    print(header.format(week_id, week_url, "-" * (len(week_url) - 9)))
 
     for ix, td in enumerate(tds):
         if "heavy airplay" in td.text.lower():
@@ -550,6 +551,108 @@ def wfmu(oldest_first=False, n_items=None):
             print_airplay_list(tds, next_entry(ix), "medium", n_items)
         elif "light airplay" in td.text.lower():
             print_airplay_list(tds, next_entry(ix), "light", n_items)
+
+
+def stranded(oldest_first=False, n_items=None):
+    header = """
+     .d8888b.  888                                  888               888
+    d88P  Y88b 888                                  888               888
+    Y88b.      888                                  888               888
+     "Y888b.   888888 888d888 8888b.  88888b.   .d88888  .d88b.   .d88888
+        "Y88b. 888    888P"      "88b 888 "88b d88" 888 d8P  Y8b d88" 888
+          "888 888    888    .d888888 888  888 888  888 88888888 888  888
+    Y88b  d88P Y88b.  888    888  888 888  888 Y88b 888 Y8b.     Y88b 888
+     "Y8888P"   "Y888 888    "Y888888 888  888  "Y88888  "Y8888   "Y88888
+    ---------------------------------------------------------------------
+    """
+    print(header)
+
+    base = "https://www.strandedrecords.com"
+    url = op.join(base, "collections/recommended")
+    html = requests.get(url).text
+    soup = BeautifulSoup(html, "html5lib")
+    records = soup.find_all("div", class_="details")
+
+    if oldest_first:
+        records = records[::-1]
+
+    for ix, record in enumerate(records):
+        if n_items and ix == n_items:
+            break
+
+        link = op.join(base, record.find("a", class_="clearfix").attrs["href"][1:])
+        title = record.find("h4", class_="title").text
+        artist, album = title.split(" - ")
+        album = album.replace(" LP", "").strip()
+        artist = artist.strip()
+        label = try_except(
+            lambda: record.find("span", class_="vendor").text.strip(), "label"
+        )
+
+        detail_soup = BeautifulSoup(requests.get(link).text, "html5lib")
+        paragraphs = detail_soup.find("div", class_="description").find_all("p")
+        lede = "\n".join(
+            [p.text.strip() for p in paragraphs if not p.text.startswith("Label")]
+        )
+
+        entry = {
+            "artist": artist,
+            "album": album,
+            "label": label,
+            "link": link,
+            "lede": lede,
+        }
+
+        print_record(**entry)
+
+
+def kalx(oldest_first=False, n_items=None):
+    header = """
+    88      a8P          db         88           8b        d8
+    88    ,88'          d88b        88            Y8,    ,8P
+    88  ,88"           d8'`8b       88             `8b  d8'
+    88,d88'           d8'  `8b      88               Y88P
+    8888"88,         d8YaaaaY8b     88               d88b
+    88P   Y8b       d8\"\"\"\"\"\"\"\"8b    88             ,8P  Y8,
+    88     "88,    d8'        `8b   88            d8'    `8b
+    88       Y8b  d8'          `8b  88888888888  8P        Y8
+
+    Most Played: {}
+    {}
+    ----------------------------------------------------------
+    """
+
+    url = "https://www.kalx.berkeley.edu/charts/top-35"
+    html = requests.get(url).text
+    soup = BeautifulSoup(html, "html5lib")
+
+    # get the most recent week's list
+    week_id = soup.find("h3").text
+    records = soup.find_all("div", class_="item-list")[1].find_all("span")
+
+    if oldest_first:
+        records = records[::-1]
+
+    week_url = colored("{}".format(url), "blue")
+    print(header.format(week_id, week_url))
+
+    for ix, record in enumerate(records):
+        if n_items and ix == n_items:
+            break
+
+        album_label = record.text.split("|")[1].strip()
+        album, label = album_label.rsplit("(", 1)
+        album = album.strip()
+        label = label.replace(")", "").strip()
+        artist = record.find("strong").text.strip()
+        entry = {
+            "artist": artist,
+            "album": album,
+            "label": label,
+            "index": "    {:>2}. ".format(ix + 1),
+        }
+        print_record(**entry)
+        time.sleep(0.15)
 
 
 def midheaven(oldest_first=False, n_items=None):

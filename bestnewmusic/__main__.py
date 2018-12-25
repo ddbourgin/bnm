@@ -9,10 +9,12 @@ from .sources import (
     midheaven,
     pitchfork,
     resident_advisor,
+    stranded,
     wfmu,
+    kalx,
 )
 
-choices = ["am", "p4k", "ra", "bk", "fe", "mh", "wfmu"]
+choices = ["am", "p4k", "ra", "bk", "fe", "mh", "sd", "wfmu", "kalx"]
 
 
 def main():
@@ -32,7 +34,9 @@ def main():
 - bk   : Boomkat Weekly Best Sellers
 - mh   : Midheaven Weekly Best Sellers
 - fe   : Forced Exposure Weekly Best Sellers
-- wfmu : WFMU Weekly Charts""",
+- sd   : Stranded Recommended Records
+- wfmu : WFMU Weekly Charts
+- kalx : KALX Weekly Charts""",
     )
     parser.add_argument(
         "-r",
@@ -72,10 +76,14 @@ def main():
         forced_exposure(oldest_first=reverse, n_items=n_items)
     elif source == "bk":
         boomkat(oldest_first=reverse, n_items=n_items)
-    elif source == "wfmu":
-        wfmu(oldest_first=reverse, n_items=n_items)
     elif source == "mh":
         midheaven(oldest_first=reverse, n_items=n_items)
+    elif source == "sd":
+        stranded(oldest_first=reverse, n_items=n_items)
+    elif source == "wfmu":
+        wfmu(oldest_first=reverse, n_items=n_items)
+    elif source == "kalx":
+        kalx(oldest_first=reverse, n_items=n_items)
 
 
 if __name__ == "__main__":

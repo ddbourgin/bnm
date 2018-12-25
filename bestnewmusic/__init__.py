@@ -5,4 +5,5 @@ from .sources import (
     resident_advisor,
     boomkat,
     wfmu,
+    kalx,
 )

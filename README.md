@@ -12,7 +12,9 @@ View recent highly rated albums in the terminal.
 - [Forced Exposure Best Sellers](https://forcedexposure.com/Best/BestIndex.html)
 - [Boomkat Best Sellers](https://boomkat.com/bestsellers)
 - [Midheaven Weekly Best Sellers](https://www.midheaven.com/top-selling)
+- [Stranded Recommended Records](https://www.strandedrecords.com/collections/recommended)
 - [WFMU Heavily Played Records](http://www.wfmu.org/Playlists/Wfmu/#t)
+- [KALX Weekly Top 35](https://www.kalx.berkeley.edu/charts/top-35)
 
 ## Installation
 ### OSX
@@ -52,7 +54,9 @@ positional arguments:
     - bk   : Boomkat Weekly Best Sellers
     - mh   : Midheaven Weekly Best Sellers
     - fe   : Forced Exposure Weekly Best Sellers
+    - sd   : Stranded Recommended Records
     - wfmu : WFMU Weekly Charts
+    - kalx : KALX Weekly Charts
 
 optional arguments:
   -h, --help            Show this help message and exit
