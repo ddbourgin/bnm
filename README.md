@@ -44,7 +44,7 @@ pip install bestnewmusic
 
 ## Usage
 ```
-usage: bnm [-h] [-r] [-l LENGTH] {am, p4k, ra, bk, fe, mh, wfmu}
+usage: bnm [-h] [-r] [-l LENGTH] {am, p4k, ra, bk, mh, fe, sd, wfmu, kalx}
 
 positional arguments:
   {am,p4k,ra,bk,fe,mh,wfmu}
