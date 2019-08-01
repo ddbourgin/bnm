@@ -549,7 +549,7 @@ def wfmu(oldest_first=False, n_items=None):
             print_airplay_list(tds, next_entry(ix), "light", n_items)
 
 
-def stranded(oldest_first=False, n_items=None):
+def stranded(oldest_first=False, n_items=30):
     header = """
      .d8888b.  888                                  888               888
     d88P  Y88b 888                                  888               888
