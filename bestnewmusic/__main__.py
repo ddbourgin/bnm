@@ -75,6 +75,7 @@ def main():
     elif source == "mh":
         midheaven(oldest_first=reverse, n_items=n_items)
     elif source == "sd":
+        n_items = 30 if n_items is None else n_items
         stranded(oldest_first=reverse, n_items=n_items)
     elif source == "wfmu":
         wfmu(oldest_first=reverse, n_items=n_items)
