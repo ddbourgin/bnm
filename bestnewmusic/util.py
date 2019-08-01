@@ -1,8 +1,7 @@
-from selenium import webdriver
-from selenium.common.exceptions import TimeoutException
-
-
 def render(query_url, page_load_timeout=30):
+    from selenium import webdriver
+    from selenium.common.exceptions import TimeoutException
+
     options = webdriver.ChromeOptions()
     options.add_argument("headless")
     browser = webdriver.Chrome(chrome_options=options)

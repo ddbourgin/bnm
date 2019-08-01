@@ -1,8 +1,9 @@
 from .sources import (
-    allmusic,
-    forced_exposure,
-    pitchfork,
     resident_advisor,
+    forced_exposure,
+    midheaven,
+    pitchfork,
+    stranded,
     boomkat,
     wfmu,
     kalx,

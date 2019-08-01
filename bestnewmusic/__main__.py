@@ -3,7 +3,6 @@ import sys
 import argparse
 
 from .sources import (
-    allmusic,
     boomkat,
     forced_exposure,
     midheaven,
@@ -14,7 +13,7 @@ from .sources import (
     kalx,
 )
 
-choices = ["am", "p4k", "ra", "bk", "fe", "mh", "sd", "wfmu", "kalx"]
+choices = ["p4k", "ra", "bk", "fe", "mh", "sd", "wfmu", "kalx"]
 
 
 def main():
@@ -28,7 +27,6 @@ def main():
         type=str,
         choices=choices,
         help="""\
-- am   : AllMusic Editor's Choice
 - p4k  : Pitchfork 8.0+ Albums
 - ra   : Resident Advisor Recommends
 - bk   : Boomkat Weekly Best Sellers
@@ -66,8 +64,6 @@ def main():
         parser.error(
             "Unrecognized source '{}'. Valid entries are {}.".format(args.source, vals)
         )
-    elif source == "am":
-        allmusic(oldest_first=reverse, n_items=n_items)
     elif source == "p4k":
         pitchfork(oldest_first=reverse, n_items=n_items)
     elif source == "ra":

@@ -10,7 +10,7 @@ import requests
 from bs4 import BeautifulSoup
 from termcolor import colored
 
-from .util import render, try_except
+from .util import try_except
 
 
 def print_record(**kwargs):
@@ -68,6 +68,8 @@ def print_record(**kwargs):
 
 
 def allmusic(oldest_first=False, n_items=None):
+    from .util import render
+
     header = """
                _ _ __  __           _
          /\   | | |  \/  |         (_)
@@ -483,32 +485,26 @@ def wfmu(oldest_first=False, n_items=None):
     def print_airplay_list(tds, list_ix, name, n_items):
         print("")
         print(colored("{} AIRPLAY".format(name.upper()), attrs=["underline"]))
-        records = list(tds[list_ix].find("td", class_="mcnTextContent").children)
+        records = tds[list_ix].find_all("li")
         enum = 1
         for ix, record in enumerate(records):
             if n_items and enum == n_items + 1:
                 break
 
-            if record.name in ["strong", "div"]:
-                if record.name == "div":
-                    artist, rest = record.text.split(" - ")
-                    artist = artist.strip().title()
-                else:
-                    artist = record.text.strip().title()
-                    rest = records[ix + 1]
+            artist, rest = record.text.split(" - ", 1)
 
-                album, label = rest.rsplit("(", 1)
-                album = album.strip().replace("-", "").strip()
-                label = label.replace(")", "").strip()
-                entry = {
-                    "artist": artist,
-                    "album": album,
-                    "label": label,
-                    "index": "    {:>2}. ".format(enum),
-                }
-                print_record(**entry)
-                time.sleep(0.15)
-                enum += 1
+            album, label = rest.rsplit("(", 1)
+            album = album.strip().replace("-", "").strip()
+            label = label.replace(")", "").strip()
+            entry = {
+                "artist": artist,
+                "album": album,
+                "label": label,
+                "index": "    {:>2}. ".format(enum),
+            }
+            print_record(**entry)
+            time.sleep(0.15)
+            enum += 1
 
     header = """
     888       888 8888888888 888b     d888 888     888
@@ -528,7 +524,7 @@ def wfmu(oldest_first=False, n_items=None):
     soup = BeautifulSoup(html, "html5lib")
 
     # get the most recent week's list
-    list_element = soup.find_all("a")[1]
+    list_element = soup.find_all("a", class_="playlist")[0]
     week_id = list_element.text
 
     week_url = list_element.attrs["href"]
@@ -725,6 +721,8 @@ def midheaven(oldest_first=False, n_items=None):
 
 
 def metacritic(oldest_first=False):
+    from .util import render
+
     header = """
                   .-.
                     /|/|         /                   .-.    /  .-.
