@@ -578,12 +578,11 @@ def stranded(oldest_first=False, n_items=None):
 
         link = op.join(base, record.find("a", class_="clearfix").attrs["href"][1:])
         title = record.find("h4", class_="title").text
-        artist, album = title.split(" - ")
+        artist, rest = title.split(" - ", 1)
+        album, label = rest.rsplit(" (", 1)
+        label = label.rsplit(")", 1)[0].strip()
         album = album.replace(" LP", "").strip()
         artist = artist.strip()
-        label = try_except(
-            lambda: record.find("span", class_="vendor").text.strip(), "label"
-        )
 
         detail_soup = BeautifulSoup(requests.get(link).text, "html5lib")
         paragraphs = detail_soup.find("div", class_="description").find_all("p")
