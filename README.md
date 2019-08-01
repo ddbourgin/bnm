@@ -26,7 +26,7 @@ pip install bestnewmusic
 usage: bnm [-h] [-r] [-l LENGTH] {p4k, ra, bk, mh, fe, sd, wfmu, kalx}
 
 positional arguments:
-  {am,p4k,ra,bk,mh,fe,sd,wfmu,kalx}
+  {p4k,ra,bk,mh,fe,sd,wfmu,kalx}
     - p4k  : Pitchfork 8.0+ Albums
     - ra   : Resident Advisor Recommends
     - bk   : Boomkat Weekly Best Sellers
