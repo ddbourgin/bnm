@@ -23,12 +23,12 @@ setup(
     packages=["bestnewmusic"],
     entry_points={"console_scripts": ["bnm = bestnewmusic.__main__:main"]},
     install_requires=[
-        "chromedriver_installer",
+#         "chromedriver_installer",
         "requests",
         "termcolor",
         "beautifulsoup4",
         "html5lib",
-        "selenium",
+#         "selenium",
     ],
     classifiers=[
         "Development Status :: 3 - Alpha",
