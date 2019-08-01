@@ -8,7 +8,6 @@ View recent highly rated albums in the terminal.
 `bnm` supports the following sources:
 - [Pitchfork 8.0+ Albums](https://pitchfork.com/best/high-scoring-albums/)
 - [Resident Advisor Recommends](https://www.residentadvisor.net/reviews.aspx?format=recommend)
-- [AllMusic Editor's Choice](https://www.allmusic.com/newreleases/editorschoice)
 - [Forced Exposure Best Sellers](https://forcedexposure.com/Best/BestIndex.html)
 - [Boomkat Best Sellers](https://boomkat.com/bestsellers)
 - [Midheaven Weekly Best Sellers](https://www.midheaven.com/top-selling)
@@ -24,11 +23,10 @@ pip install bestnewmusic
 
 ## Usage
 ```
-usage: bnm [-h] [-r] [-l LENGTH] {am, p4k, ra, bk, mh, fe, sd, wfmu, kalx}
+usage: bnm [-h] [-r] [-l LENGTH] {p4k, ra, bk, mh, fe, sd, wfmu, kalx}
 
 positional arguments:
   {am,p4k,ra,bk,mh,fe,sd,wfmu,kalx}
-    - am   : AllMusic Editor's Choice
     - p4k  : Pitchfork 8.0+ Albums
     - ra   : Resident Advisor Recommends
     - bk   : Boomkat Weekly Best Sellers
