@@ -10,7 +10,7 @@ import requests
 from bs4 import BeautifulSoup
 from termcolor import colored
 
-from .util import try_except
+from .util import try_except, strip, SPACE_HYPHEN_SPACE, HYPHEN_SPACE
 
 
 def print_record(**kwargs):
@@ -20,14 +20,14 @@ def print_record(**kwargs):
     if "index" not in kwargs:
         kwargs["index"] = ""
 
-    artist = kwargs["artist"].encode("utf-8").decode("utf-8")
-    album = kwargs["album"].encode("utf-8").decode("utf-8")
-    label = kwargs["label"].encode("utf-8").decode("utf-8")
-    symbol = kwargs["symbol"].encode("utf-8").decode("utf-8")
+    artist = strip(kwargs["artist"]).encode("utf-8").decode("utf-8")
+    album = strip(kwargs["album"]).encode("utf-8").decode("utf-8")
+    label = strip(kwargs["label"]).encode("utf-8").decode("utf-8")
+    symbol = strip(kwargs["symbol"]).encode("utf-8").decode("utf-8")
     index = kwargs["index"].encode("utf-8").decode("utf-8")
 
-    album = colored(album.strip(), "yellow")
-    artist = colored(artist.strip(), "red", attrs=["bold", "dark"])
+    album = colored(album, "yellow")
+    artist = colored(artist, "red", attrs=["bold", "dark"])
 
     print("{}{} :: {} ({}){}".format(index, artist, album, label, symbol))
 
@@ -40,12 +40,12 @@ def print_record(**kwargs):
         print("    {}".format(status))
 
     if "genre" in kwargs:
-        genre = kwargs["genre"].encode("utf-8").decode("utf-8")
+        genre = strip(kwargs["genre"]).encode("utf-8").decode("utf-8")
         genre = colored(genre, "blue", attrs=["bold", "dark"])
         print("    {}".format(genre))
 
     if "rating" in kwargs:
-        rating = kwargs["rating"].encode("utf-8").decode("utf-8")
+        rating = strip(kwargs["rating"]).encode("utf-8").decode("utf-8")
         ul_rating = colored("Rating", attrs=["underline"])
         print("    {}: {}".format(ul_rating, rating))
 
@@ -62,7 +62,7 @@ def print_record(**kwargs):
         print('    "{}"'.format(lede))
 
     if "link" in kwargs:
-        link = kwargs["link"].encode("utf-8").decode("utf-8")
+        link = strip(kwargs["link"]).encode("utf-8").decode("utf-8")
         link = colored(link.strip(), "blue")
         print("    {}\n".format(link))
 
@@ -357,9 +357,9 @@ def resident_advisor(oldest_first=False, n_items=None):
 
         if "Unknown album" not in title:
             try:
-                artist, album = title.split(" - ", 1)
+                artist, album = SPACE_HYPHEN_SPACE.split(title, 1)
             except ValueError:
-                artist, album = title.split("- ", 1)
+                artist, album = HYPHEN_SPACE.split(title, 1)
 
         href = try_except(lambda: record.find("a").attrs["href"].strip(), "link")
         label = try_except(
@@ -401,7 +401,7 @@ def resident_advisor(oldest_first=False, n_items=None):
             "genre": genre,
             "link": link,
             "lede": lede,
-            "rating": rating,
+            #  "rating": rating, # RA doesn't include ratings anymore!
         }
         print_record(**entry)
 
@@ -491,10 +491,10 @@ def wfmu(oldest_first=False, n_items=None):
             if n_items and enum == n_items + 1:
                 break
 
-            artist, rest = record.text.split(" - ", 1)
+            artist, rest = SPACE_HYPHEN_SPACE.split(record.text, 1)
 
             album, label = rest.rsplit("(", 1)
-            album = album.strip().replace("-", "").strip()
+            album = album.strip().strip()
             label = label.replace(")", "").strip()
             entry = {
                 "artist": artist,
@@ -578,9 +578,8 @@ def stranded(oldest_first=False, n_items=30):
 
         link = op.join(base, record.find("a", class_="clearfix").attrs["href"][1:])
         title = record.find("h4", class_="title").text
-        artist, rest = title.split(" - ", 1)
-        album, label = rest.rsplit(" (", 1)
-        label = label.rsplit(")", 1)[0].strip()
+        artist, album = SPACE_HYPHEN_SPACE.split(title, 1)
+        label = record.find("span", class_="vendor").text
         album = album.replace(" LP", "").strip()
         artist = artist.strip()
 
@@ -754,9 +753,9 @@ def metacritic(oldest_first=False):
             "album",
         )
         artist = try_except(
-            lambda: record.find("span", class_="product_artist")
-            .text.split(" - ")[-1]
-            .strip(),
+            lambda: SPACE_HYPHEN_SPACE.split(
+                record.find("span", class_="product_artist").text
+            )[-1].strip(),
             "artist",
         )
         genres = try_except(
