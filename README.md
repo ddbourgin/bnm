@@ -23,7 +23,7 @@ pip install bestnewmusic
 
 ## Usage
 ```
-usage: bnm [-h] [-r] [-l LENGTH] {p4k, ra, bk, mh, fe, sd, wfmu, kalx}
+usage: bnm [-h] [-r] [-l LENGTH] {p4k, ra, bk, mh, fe, sd, wfmu, am}
 
 positional arguments:
   {p4k,ra,bk,mh,fe,sd,wfmu,kalx}
@@ -34,7 +34,7 @@ positional arguments:
     - fe   : Forced Exposure Weekly Best Sellers
     - sd   : Stranded Recommended Records
     - wfmu : WFMU Weekly Charts
-    - kalx : KALX Weekly Charts
+    - am   : AllMusic Featured New Albums
 
 optional arguments:
   -h, --help            Show this help message and exit
