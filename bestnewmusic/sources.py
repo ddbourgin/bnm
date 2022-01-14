@@ -2,18 +2,31 @@
 from __future__ import unicode_literals
 from __future__ import print_function
 
-import textwrap
 import time
+import textwrap
 import os.path as op
+from functools import partial
 
+import re
 import requests
 from bs4 import BeautifulSoup
 from termcolor import colored
 
-from .util import try_except, strip, SPACE_HYPHEN_SPACE, HYPHEN_SPACE
+from bestnewmusic.util import (
+    Animate,
+    strip,
+    try_except,
+    render_html,
+    initialize_webdriver,
+    HYPHEN_SPACE,
+    SPACE_HYPHEN_SPACE,
+)
+
+SLEEP_BTWN_ITEMS = 0.5
 
 
-def print_record(**kwargs):
+def print_record(trailing_newline=True, **kwargs):
+    trailing_newline = "\n" if trailing_newline else ""
     if "symbol" not in kwargs:
         kwargs["symbol"] = ""
 
@@ -64,12 +77,10 @@ def print_record(**kwargs):
     if "link" in kwargs:
         link = strip(kwargs["link"]).encode("utf-8").decode("utf-8")
         link = colored(link.strip(), "blue")
-        print("    {}\n".format(link))
+        print("    {}{}".format(link, trailing_newline))
 
 
 def allmusic(oldest_first=False, n_items=None):
-    from .util import render
-
     header = """
                _ _ __  __           _
          /\   | | |  \/  |         (_)
@@ -84,22 +95,12 @@ def allmusic(oldest_first=False, n_items=None):
      |______\__,_|_|\__\___/|_|    |___/  \_____|_| |_|\___/|_|\___\___|
      -------------------------------------------------------------------
     """
+
+    driver = Animate(initialize_webdriver, "Initializing webdriver...")()
     print(header)
 
-    star_map = {
-        "10": "5",
-        "9": "5",
-        "8": "4.5",
-        "7": "4",
-        "6": "3.5",
-        "5": "3",
-        "4": "2.5",
-        "3": "2",
-        "2": "1.5",
-        "1": "1",
-    }
     url = "https://www.allmusic.com/newreleases/editorschoice"
-    html = render(url)
+    html = Animate(partial(render_html, url, driver), "", trailing_newline=True)()
     soup = BeautifulSoup(html, "html5lib")
     records = soup.find_all("div", class_="editors-choice-item")
 
@@ -109,6 +110,9 @@ def allmusic(oldest_first=False, n_items=None):
     for ix, record in enumerate(records):
         if n_items and ix == n_items:
             break
+
+        if ix > 0:
+            time.sleep(SLEEP_BTWN_ITEMS)
 
         artist = try_except(
             lambda: record.find("div", class_="artist").text.strip(), "artist"
@@ -129,13 +133,14 @@ def allmusic(oldest_first=False, n_items=None):
             lambda: record.find("div", class_="title").find("a").attrs["href"].strip(),
             "link",
         )
-        rating = try_except(
-            lambda: record.find("span", class_="allmusic-rating").attrs["class"][-1],
-            "rating",
-        )
 
-        if "Unknown rating" not in rating:
-            rating = star_map[rating.split("rating-allmusic-")[-1]]
+        def allmusic_rating():
+            r = record.find("div", class_="allmusic-rating-new")
+            rating = len(r.find_all("img", class_="blue star"))
+            rating += len(r.find_all("img", class_="blue half")) * 0.5
+            return str(rating)
+
+        rating = try_except(lambda: allmusic_rating(), "rating")
 
         entry = {
             "artist": artist,
@@ -147,7 +152,8 @@ def allmusic(oldest_first=False, n_items=None):
             "rating": rating,
         }
 
-        print_record(**entry)
+        print_record(trailing_newline=True, **entry)
+    driver.close()
 
 
 def forced_exposure(oldest_first=False, n_items=None):
@@ -171,9 +177,12 @@ def forced_exposure(oldest_first=False, n_items=None):
     if oldest_first:
         indices = reversed(indices)
 
-    for ix in indices:
+    for i, ix in enumerate(indices):
         if n_items and (ix - 2) == n_items:
             break
+
+        if i > 0:
+            time.sleep(SLEEP_BTWN_ITEMS)
 
         ix = "0" + str(ix) if ix <= 9 else ix
         prefix = "ctl00_ContentPlaceHolder1_gvRecBestSeller_ctl{}_".format(ix)
@@ -338,21 +347,31 @@ def resident_advisor(oldest_first=False, n_items=None):
     \/ \_/\_/ \_/ \/ \_/\___|\___\___/|_| |_| |_|_| |_| |_|\___|_| |_|\__,_|___/
     ---------------------------------------------------------------------------
     """
+    driver = Animate(initialize_webdriver, "Initializing webdriver...")()
     print(header)
 
-    url = "https://www.residentadvisor.net/reviews.aspx?format=recommend"
-    html = requests.get(url).text
+    url = "https://ra.co/reviews/recommends"
+    html = Animate(partial(render_html, url, driver), "", trailing_newline=True)()
     soup = BeautifulSoup(html, "html5lib")
-    records = soup.find_all("li", class_="min-height-medium")
+    reviews = soup.find("main", {"data-tracking-id": "reviews-archive"}).find_all(
+        "li", class_="Column-sc-18hsrnn-0 iBzIXi"
+    )
 
     if oldest_first:
         records = records[::-1]
 
-    for ix, record in enumerate(records):
+    title_regex = re.compile("^/reviews/")
+    label_regex = re.compile("^/labels/")
+
+    for ix, record in enumerate(reviews):
         if n_items and ix == n_items:
             break
 
-        title = try_except(lambda: record.find("h1").text.strip(), "album")
+        if ix > 0:
+            time.sleep(SLEEP_BTWN_ITEMS)
+
+        tattr = {"data-tracking-id": title_regex}
+        title = try_except(lambda: record.find("span", tattr).text.strip(), "album")
         artist, album = ("Unknown artist", "Unknown album")
 
         if "Unknown album" not in title:
@@ -361,49 +380,27 @@ def resident_advisor(oldest_first=False, n_items=None):
             except ValueError:
                 artist, album = HYPHEN_SPACE.split(title, 1)
 
-        href = try_except(lambda: record.find("a").attrs["href"].strip(), "link")
-        label = try_except(
-            lambda: record.find("div", class_="sub").find("h1").text.strip(), "label"
+        get_rpath = lambda: record.find("span", tattr).attrs["href"]
+        create_link = lambda: f"https://ra.co{get_rpath()}"
+        link = try_except(lambda: create_link(), "link")
+
+        lattr = {"data-tracking-id": label_regex}
+        label = try_except(lambda: record.find("span", lattr).text.strip(), "label")
+        lede = try_except(
+            lambda: record.find("span", class_="gTxVQC").text.strip(), "review"
         )
-
-        rating, lede = ("Unknown rating", "Unknown review")
-        if "Unknown link" not in href:
-            link = "https://www.residentadvisor.net{}".format(href)
-
-            # visit the review page to get genre, rating, & review lede
-            review_html = requests.get(link).text
-            review = BeautifulSoup(review_html, "html5lib")
-
-            rating = try_except(
-                lambda: "{}".format(review.find("span", class_="rating").text), "rating"
-            )
-            lede = try_except(
-                lambda: review.find("span", class_="reading-line-height")
-                .text.strip()
-                .split("\n")[0]
-                .strip(),
-                "review",
-            )
-
-        genre = "Unknown genre"
-        lines = try_except(
-            lambda: review.find("ul", class_="clearfix").find_all("li"), "lines"
-        )
-        if not "Unknown lines" in lines:
-            for li in lines:
-                if "Style" in li.text:
-                    genre = li.text.strip().split("Style /\n\n")[1].replace("\n", " ")
 
         entry = {
             "artist": artist,
             "album": album,
             "label": label,
-            "genre": genre,
             "link": link,
             "lede": lede,
+            #  "genre": genre,
             #  "rating": rating, # RA doesn't include ratings anymore!
         }
         print_record(**entry)
+    driver.close()
 
 
 def boomkat(period="last-week", oldest_first=False, n_items=None):
@@ -419,13 +416,15 @@ def boomkat(period="last-week", oldest_first=False, n_items=None):
     /_____/\___/____/\__/   /____/\___/_/_/\___/_/  /____/
     -------------------------------------------------------
     """
+    driver = Animate(initialize_webdriver, "Initializing webdriver...")()
     print(header)
 
     if period not in ["last-week", "last-month", "last-year"]:
         raise ValueError("Unrecognized period: {}".format(period))
 
     url = "https://boomkat.com/bestsellers?q[release_date]={}".format(period)
-    html = requests.get(url).text
+    html = Animate(partial(render_html, url, driver), "", trailing_newline=False)()
+
     soup = BeautifulSoup(html, "html5lib")
     records = soup.find_all("li", class_="bestsellers-item")
 
@@ -456,7 +455,9 @@ def boomkat(period="last-week", oldest_first=False, n_items=None):
         # visit the review page to get the review lede
         lede = "Unknown review"
         if "Unknown link" not in link:
-            review_html = requests.get(link).text
+            review_html = Animate(
+                partial(render_html, link, driver), "", trailing_newline=True
+            )()
             review = BeautifulSoup(review_html, "html5lib")
             lede = try_except(
                 lambda: review.find("div", class_="product-review")
@@ -478,7 +479,9 @@ def boomkat(period="last-week", oldest_first=False, n_items=None):
             "index": "{}. ".format(ix + 1),
         }
 
-        print_record(**entry)
+        print_record(trailing_newline=False, **entry)
+    print("\n")
+    driver.quit()
 
 
 def wfmu(oldest_first=False, n_items=None):
@@ -503,7 +506,7 @@ def wfmu(oldest_first=False, n_items=None):
                 "index": "    {:>2}. ".format(enum),
             }
             print_record(**entry)
-            time.sleep(0.15)
+            time.sleep(SLEEP_BTWN_ITEMS)
             enum += 1
 
     header = """
@@ -576,6 +579,9 @@ def stranded(oldest_first=False, n_items=30):
         if n_items and ix == n_items:
             break
 
+        if ix > 0:
+            time.sleep(SLEEP_BTWN_ITEMS)
+
         link = op.join(base, record.find("a", class_="clearfix").attrs["href"][1:])
         title = record.find("h4", class_="title").text
         artist, album = SPACE_HYPHEN_SPACE.split(title, 1)
@@ -646,7 +652,7 @@ def kalx(oldest_first=False, n_items=None):
             "index": "    {:>2}. ".format(ix + 1),
         }
         print_record(**entry)
-        time.sleep(0.15)
+        time.sleep(SLEEP_BTWN_ITEMS)
 
 
 def midheaven(oldest_first=False, n_items=None):
@@ -680,6 +686,9 @@ def midheaven(oldest_first=False, n_items=None):
     for ix, record in enumerate(records):
         if n_items and ix == n_items:
             break
+
+        if ix > 0:
+            time.sleep(SLEEP_BTWN_ITEMS)
 
         artist = try_except(lambda: record.find("h4").text.strip(), "artist")
         album = try_except(lambda: record.find("h5").text.strip(), "album")
@@ -719,8 +728,6 @@ def midheaven(oldest_first=False, n_items=None):
 
 
 def metacritic(oldest_first=False):
-    from .util import render
-
     header = """
                   .-.
                     /|/|         /                   .-.    /  .-.
@@ -736,10 +743,11 @@ def metacritic(oldest_first=False):
     (_/  `----'     /            (__.'      `.               /
     ---------------------------------------------------------------------------------
     """
+    driver = Animate(initialize_webdriver, "Initializing webdriver...")()
     print(header)
 
     url = "http://www.metacritic.com/browse/albums/release-date/new-releases/metascore?view=detailed"
-    html = render(url)
+    html = Animate(partial(render_html, url, driver), "", trailing_newline=True)()
     soup = BeautifulSoup(html, "html5lib")
     records = soup.find_all("td", class_="clamp-summary-wrap")
     records = records[:35]
@@ -781,6 +789,7 @@ def metacritic(oldest_first=False):
         if isinstance(genre, list):
             genre = " / ".join([g for g in genre if "..." not in g])
 
+        label, lede, link = "Unknown label", "Unknown lede", "Unknown link"
         if "Unknown link" not in href:
             link = "http://www.metacritic.com{}".format(href)
 

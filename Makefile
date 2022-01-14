@@ -24,5 +24,9 @@ build: clean-build
 	python3 setup.py sdist
 	python3 setup.py bdist_wheel --universal
 
+install: build
+	pip3 uninstall bestnewmusic -y
+	python3 setup.py install
+
 release: build
 	twine upload dist/*

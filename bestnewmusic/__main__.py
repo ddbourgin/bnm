@@ -7,18 +7,19 @@ from .sources import (
     forced_exposure,
     midheaven,
     pitchfork,
+    allmusic,
     resident_advisor,
     stranded,
     wfmu,
     kalx,
 )
 
-choices = ["p4k", "ra", "bk", "fe", "mh", "sd", "wfmu", "kalx"]
+choices = ["p4k", "ra", "bk", "fe", "mh", "sd", "wfmu", "am"]  # "kalx"
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="View recent releases and their reviews from the command line",
+        description="View recent releases and their reviews from the command line.",
         formatter_class=argparse.RawTextHelpFormatter,
     )
 
@@ -33,8 +34,8 @@ def main():
 - mh   : Midheaven Weekly Best Sellers
 - fe   : Forced Exposure Weekly Best Sellers
 - sd   : Stranded Recommended Records
-- wfmu : WFMU Weekly Charts
-- kalx : KALX Weekly Charts""",
+- am   : AllMusic Featured New Releases
+- wfmu : WFMU Weekly Charts""",
     )
     parser.add_argument(
         "-r",
@@ -79,8 +80,10 @@ def main():
         stranded(oldest_first=reverse, n_items=n_items)
     elif source == "wfmu":
         wfmu(oldest_first=reverse, n_items=n_items)
-    elif source == "kalx":
-        kalx(oldest_first=reverse, n_items=n_items)
+    elif source == "am":
+        allmusic(oldest_first=reverse, n_items=n_items)
+    #  elif source == "kalx":
+    #      kalx(oldest_first=reverse, n_items=n_items)
 
 
 if __name__ == "__main__":

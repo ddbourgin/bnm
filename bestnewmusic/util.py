@@ -1,23 +1,75 @@
 import re
+import itertools
+import threading
+import time
+import sys
+
+from termcolor import colored
+from fake_useragent import UserAgent
+
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+
+from webdriver_manager.chrome import ChromeDriverManager
 
 
-def render(query_url, page_load_timeout=30):
-    from selenium import webdriver
-    from selenium.common.exceptions import TimeoutException
+ua = UserAgent()
 
-    options = webdriver.ChromeOptions()
-    options.add_argument("headless")
-    browser = webdriver.Chrome(chrome_options=options)
-    browser.set_page_load_timeout(page_load_timeout)
 
-    try:
-        browser.get(query_url)
-        html_source = browser.page_source
-        browser.quit()
-        return html_source
+class Animate:
+    def __init__(
+        self,
+        fn,
+        msg,
+        linewidth=80,
+        trailing_newline=False,
+        animations=["⢿", "⣻", "⣽", "⣾", "⣷", "⣯", "⣟", "⡿"],
+    ):
+        self.fn = fn
+        self.msg = msg
+        self._is_done = False
+        self.animations = animations
+        self.linewidth = linewidth
+        self.newline = "\n" if trailing_newline is True else ""
 
-    except TimeoutException:
-        return render(query_url)
+    def animate(self):
+        for c in itertools.cycle(self.animations):
+            if self._is_done:
+                break
+            c = colored(c, "blue", attrs=["bold"])
+            sys.stdout.write(f"\r {c} {self.msg}")
+            sys.stdout.flush()
+            time.sleep(0.1)
+        sys.stdout.write("\r" + (" " * self.linewidth) + self.newline)
+
+    def __call__(self):
+        self.thread = threading.Thread(target=self.animate, daemon=True)
+        self.thread.start()
+        fn_out = self.fn()
+        self.stop()
+        self.thread.join()
+        return fn_out
+
+    def stop(self):
+        self._is_done = True
+
+
+def initialize_webdriver():
+    options = Options()
+    options.headless = True
+    options.add_argument("--window-size=1920,1200")
+    options.add_argument(f"--user-agent={ua.random}")
+    driver = webdriver.Chrome(
+        options=options, executable_path=ChromeDriverManager(log_level=0).install()
+    )
+    return driver
+
+
+def render_html(url, driver):
+    agent = {"userAgent": ua.random}  # randomize user-agent
+    driver.execute_cdp_cmd("Network.setUserAgentOverride", agent)
+    driver.get(url)
+    return driver.page_source
 
 
 def try_except(f, field):
