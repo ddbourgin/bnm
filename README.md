@@ -7,13 +7,13 @@ View recent highly rated albums in the terminal.
 
 `bnm` supports the following sources:
 - [Pitchfork 8.0+ Albums](https://pitchfork.com/best/high-scoring-albums/)
-- [Resident Advisor Recommends](https://www.residentadvisor.net/reviews.aspx?format=recommend)
+- [Resident Advisor Recommends](https://ra.co/reviews/recommends)
 - [Forced Exposure Best Sellers](https://forcedexposure.com/Best/BestIndex.html)
 - [Boomkat Best Sellers](https://boomkat.com/bestsellers)
 - [Midheaven Weekly Best Sellers](https://www.midheaven.com/top-selling)
 - [Stranded Recommended Records](https://www.strandedrecords.com/collections/recommended)
 - [WFMU Heavily Played Records](http://www.wfmu.org/Playlists/Wfmu/#t)
-- [KALX Weekly Top 35](https://www.kalx.berkeley.edu/charts/top-35)
+- [AllMusic Featured New Albums](https://www.allmusic.com/newreleases)
 
 ## Installation
 Install with pip:
