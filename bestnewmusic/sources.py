@@ -36,13 +36,13 @@ def print_record(trailing_newline=True, **kwargs):
     artist = strip(kwargs["artist"]).encode("utf-8").decode("utf-8")
     album = strip(kwargs["album"]).encode("utf-8").decode("utf-8")
     label = strip(kwargs["label"]).encode("utf-8").decode("utf-8")
-    symbol = strip(kwargs["symbol"]).encode("utf-8").decode("utf-8")
+    symbol = kwargs["symbol"].encode("utf-8").decode("utf-8")
     index = kwargs["index"].encode("utf-8").decode("utf-8")
 
     album = colored(album, "yellow")
     artist = colored(artist, "red", attrs=["bold", "dark"])
 
-    print("{}{} :: {} ({}){}".format(index, artist, album, label, symbol))
+    print("{}{} :: {} ({}) {}".format(index, artist, album, label, symbol))
 
     if "status" in kwargs:
         status = kwargs["status"]
@@ -297,23 +297,32 @@ def pitchfork(n_pages=2, oldest_first=False, n_items=None):
                 review_html = requests.get(link).text
                 review = BeautifulSoup(review_html, "html5lib")
                 rating = try_except(
-                    lambda: review.find("span", class_="score").text.strip(), "rating"
+                    lambda: review.find(
+                        "div", class_="ScoreCircle-cJwsOz"
+                    ).text.strip(),
+                    "rating",
                 )
 
-                labels = review.find_all("li", class_="labels-list__item")
+                labels = review.find_all("li", class_="InfoSliceListItem-gMxDho gigHWh")
+                labels = [i for i in labels if "Label:" in i.text]
 
                 label = try_except(
-                    lambda: set([g.text.strip() for g in labels]), "label"
+                    lambda: set([g.text.replace("Label:", "").strip() for g in labels]),
+                    "label",
                 )
                 lede = try_except(
                     lambda: review.find(
-                        "div", class_="review-detail__abstract"
+                        "div",
+                        class_="BaseWrap-sc-TURhJ BaseText-fFzBQt SplitScreenContentHeaderDekDown-fkIOvp eTiIvU ifBumJ etXaLE",
                     ).text.strip(),
                     "review",
                 )
 
             if isinstance(label, (list, set)):
                 label = ", ".join(label)
+
+            if len(labels) == 0:
+                label = "Unknown label"
 
             symbol = ""
             if "Best New Reissue" in bnm:
@@ -387,7 +396,7 @@ def resident_advisor(oldest_first=False, n_items=None):
         lattr = {"data-tracking-id": label_regex}
         label = try_except(lambda: record.find("span", lattr).text.strip(), "label")
         lede = try_except(
-            lambda: record.find("span", class_="gTxVQC").text.strip(), "review"
+            lambda: record.find("span", class_="kyXmTt").text.strip(), "review"
         )
 
         entry = {

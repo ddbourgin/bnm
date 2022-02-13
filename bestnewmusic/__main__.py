@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import os
 import sys
 import argparse
 
@@ -17,7 +18,7 @@ from .sources import (
 choices = ["p4k", "ra", "bk", "fe", "mh", "sd", "wfmu", "am"]  # "kalx"
 
 
-def main():
+def _main():
     parser = argparse.ArgumentParser(
         description="View recent releases and their reviews from the command line.",
         formatter_class=argparse.RawTextHelpFormatter,
@@ -84,6 +85,16 @@ def main():
         allmusic(oldest_first=reverse, n_items=n_items)
     #  elif source == "kalx":
     #      kalx(oldest_first=reverse, n_items=n_items)
+
+
+def main():
+    try:
+        _main()
+    except KeyboardInterrupt:
+        try:
+            sys.exit(0)
+        except SystemExit:
+            os._exit(0)
 
 
 if __name__ == "__main__":
