@@ -1,7 +1,7 @@
-beautifulsoup4==4.8.2
-html5lib==1.0.1
-requests==2.23.0
-termcolor==1.1.0
-fake-useragent==0.1.11
-selenium==3.141.0
-webdriver-manager==3.5.2
+beautifulsoup4>=4.8.2
+html5lib>=1.0.1
+requests>=2.23.0
+termcolor>=1.1.0
+fake-useragent
+selenium>=3.141.0
+webdriver-manager>=3.5.2

@@ -101,7 +101,7 @@ def allmusic(oldest_first=False, n_items=None):
 
     url = "https://www.allmusic.com/newreleases/editorschoice"
     html = Animate(partial(render_html, url, driver), "", trailing_newline=True)()
-    soup = BeautifulSoup(html, "html5lib")
+    soup = BeautifulSoup(html, "html.parser")
     records = soup.find_all("div", class_="editors-choice-item")
 
     if oldest_first:
@@ -171,7 +171,7 @@ def forced_exposure(oldest_first=False, n_items=None):
 
     url = "https://www.forcedexposure.com/Best/BestIndex.html"
     html = requests.get(url).text
-    soup = BeautifulSoup(html, "html5lib")
+    soup = BeautifulSoup(html, "html.parser")
 
     indices = range(2, 52)
     if oldest_first:
@@ -254,7 +254,7 @@ def pitchfork(n_pages=2, oldest_first=False, n_items=None):
     for pn in pages:
         url = "https://pitchfork.com/best/high-scoring-albums/?page={}".format(pn)
         html = requests.get(url).text
-        soup = BeautifulSoup(html, "html5lib")
+        soup = BeautifulSoup(html, "html.parser")
         records = soup.find_all("div", class_="review")
 
         if oldest_first:
@@ -295,7 +295,7 @@ def pitchfork(n_pages=2, oldest_first=False, n_items=None):
 
                 # visit the review page to get genre, rating, & review lede
                 review_html = requests.get(link).text
-                review = BeautifulSoup(review_html, "html5lib")
+                review = BeautifulSoup(review_html, "html.parser")
                 rating = try_except(
                     lambda: review.find(
                         "div", class_="ScoreCircle-cJwsOz"
@@ -361,7 +361,7 @@ def resident_advisor(oldest_first=False, n_items=None):
 
     url = "https://ra.co/reviews/recommends"
     html = Animate(partial(render_html, url, driver), "", trailing_newline=True)()
-    soup = BeautifulSoup(html, "html5lib")
+    soup = BeautifulSoup(html, "html.parser")
     reviews = soup.find("main", {"data-tracking-id": "reviews-archive"}).find_all(
         "li", class_="Column-sc-18hsrnn-0 iBzIXi"
     )
@@ -434,7 +434,7 @@ def boomkat(period="last-week", oldest_first=False, n_items=None):
     url = "https://boomkat.com/bestsellers?q[release_date]={}".format(period)
     html = Animate(partial(render_html, url, driver), "", trailing_newline=False)()
 
-    soup = BeautifulSoup(html, "html5lib")
+    soup = BeautifulSoup(html, "html.parser")
     records = soup.find_all("li", class_="bestsellers-item")
 
     if oldest_first:
@@ -467,7 +467,7 @@ def boomkat(period="last-week", oldest_first=False, n_items=None):
             review_html = Animate(
                 partial(render_html, link, driver), "", trailing_newline=True
             )()
-            review = BeautifulSoup(review_html, "html5lib")
+            review = BeautifulSoup(review_html, "html.parser")
             lede = try_except(
                 lambda: review.find("div", class_="product-review")
                 .find("strong")
@@ -533,7 +533,7 @@ def wfmu(oldest_first=False, n_items=None):
     {}"""
     url = "http://www.wfmu.org/Playlists/Wfmu"
     html = requests.get(url).text
-    soup = BeautifulSoup(html, "html5lib")
+    soup = BeautifulSoup(html, "html.parser")
 
     # get the most recent week's list
     list_element = soup.find_all("a", class_="playlist")[0]
@@ -541,7 +541,7 @@ def wfmu(oldest_first=False, n_items=None):
 
     week_url = list_element.attrs["href"]
     week_html = requests.get(week_url).text
-    soup = BeautifulSoup(week_html, "html5lib")
+    soup = BeautifulSoup(week_html, "html.parser")
     tds = soup.find_all("td", class_="mcnTextBlockInner")
 
     next_entry = lambda x: x + 1
@@ -578,7 +578,7 @@ def stranded(oldest_first=False, n_items=30):
     base = "https://www.strandedrecords.com"
     url = op.join(base, "collections/recommended")
     html = requests.get(url).text
-    soup = BeautifulSoup(html, "html5lib")
+    soup = BeautifulSoup(html, "html.parser")
     records = soup.find_all("div", class_="details")
 
     if oldest_first:
@@ -598,7 +598,7 @@ def stranded(oldest_first=False, n_items=30):
         album = album.replace(" LP", "").strip()
         artist = artist.strip()
 
-        detail_soup = BeautifulSoup(requests.get(link).text, "html5lib")
+        detail_soup = BeautifulSoup(requests.get(link).text, "html.parser")
         paragraphs = detail_soup.find("div", class_="description").find_all("p")
         lede = "\n".join(
             [p.text.strip() for p in paragraphs if not p.text.startswith("Label")]
@@ -633,7 +633,7 @@ def kalx(oldest_first=False, n_items=None):
 
     url = "https://www.kalx.berkeley.edu/charts/top-35"
     html = requests.get(url).text
-    soup = BeautifulSoup(html, "html5lib")
+    soup = BeautifulSoup(html, "html.parser")
 
     # get the most recent week's list
     week_id = soup.find("h3").text
@@ -686,7 +686,7 @@ def midheaven(oldest_first=False, n_items=None):
 
     url = "https://www.midheaven.com/top-selling"
     html = requests.get(url).text
-    soup = BeautifulSoup(html, "html5lib")
+    soup = BeautifulSoup(html, "html.parser")
     records = soup.find_all("div", class_="uk-panel uk-panel-box")
 
     if oldest_first:
@@ -715,7 +715,7 @@ def midheaven(oldest_first=False, n_items=None):
 
             # visit the review page to get genre, rating, & review lede
             review_html = requests.get(link).text
-            review = BeautifulSoup(review_html, "html5lib")
+            review = BeautifulSoup(review_html, "html.parser")
 
             lede = try_except(
                 lambda: review.find("div", class_="item-meta").text.strip(), "review"
@@ -757,7 +757,7 @@ def metacritic(oldest_first=False):
 
     url = "http://www.metacritic.com/browse/albums/release-date/new-releases/metascore?view=detailed"
     html = Animate(partial(render_html, url, driver), "", trailing_newline=True)()
-    soup = BeautifulSoup(html, "html5lib")
+    soup = BeautifulSoup(html, "html.parser")
     records = soup.find_all("td", class_="clamp-summary-wrap")
     records = records[:35]
 
@@ -804,7 +804,7 @@ def metacritic(oldest_first=False):
 
             # visit the review page to get genre, rating, & review lede
             review_html = render(link)
-            review = BeautifulSoup(review_html, "html5lib")
+            review = BeautifulSoup(review_html, "html.parser")
 
             lede = try_except(
                 lambda: review.find("li", class_="summary_detail product_summary")
